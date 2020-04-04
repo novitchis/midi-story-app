@@ -7,7 +7,7 @@ class Player extends React.Component {
 
     // Next up create a new Unity Content object to
     // initialise and define your WebGL build. The
-    // paths are relative from your index file.
+    // paths are relative from your index html file.
 
     this.unityContent = new UnityContent(
       "Player/Build.json",

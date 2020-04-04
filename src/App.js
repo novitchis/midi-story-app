@@ -1,18 +1,32 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import "./firebaseConfig";
-import Player from "./components/Player";
+import firebase from "firebase";
+import UnauthenticatedApp from "./UnauthenticatedApp";
+import AuthenticatedApp from "./AuthenticatedApp";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import theme from "./theme";
 
 function App() {
+  const [isSignedIn, setIsSignedId] = useState();
+
+  useEffect(() => {
+    var unregisterAuthObserver = firebase
+      .auth()
+      .onAuthStateChanged(user => setIsSignedId(Boolean(user)));
+
+    return unregisterAuthObserver;
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <Player />
-        <p>
-          <span style={{ color: "lightgreen" }}>midi</span>
-          <span style={{ color: "lightblue" }}>story</span>
-        </p>
-      </header>
+      <ThemeProvider theme={createMuiTheme(theme)}>
+        {isSignedIn ? (
+          <AuthenticatedApp />
+        ) : (
+          <UnauthenticatedApp isLoading={isSignedIn === undefined} />
+        )}
+      </ThemeProvider>
     </div>
   );
 }
