@@ -1,33 +1,45 @@
-import React, { useState, useEffect } from "react";
-import "./App.css";
-import "./firebaseConfig";
-import firebase from "firebase";
-import UnauthenticatedApp from "./UnauthenticatedApp";
-import AuthenticatedApp from "./AuthenticatedApp";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import theme from "./theme";
+import React, { useState, useEffect } from 'react';
+import './firebaseConfig';
+import firebase from 'firebase';
+import UnauthenticatedApp from './UnauthenticatedApp';
+import AuthenticatedApp from './AuthenticatedApp';
+import {
+  createMuiTheme,
+  ThemeProvider,
+  makeStyles,
+} from '@material-ui/core/styles';
+import theme from './theme';
+
+const useStyles = makeStyles(() => ({
+  appRoot: {
+    background: theme.palette.background.default,
+    color: '#EEEEEE',
+    height: '100vh',
+  },
+}));
 
 function App() {
   const [isSignedIn, setIsSignedId] = useState();
+  const classes = useStyles();
 
   useEffect(() => {
     var unregisterAuthObserver = firebase
       .auth()
-      .onAuthStateChanged(user => setIsSignedId(Boolean(user)));
+      .onAuthStateChanged((user) => setIsSignedId(Boolean(user)));
 
     return unregisterAuthObserver;
   }, []);
 
   return (
-    <div className="App">
-      <ThemeProvider theme={createMuiTheme(theme)}>
+    <ThemeProvider theme={createMuiTheme(theme)}>
+      <div className={classes.appRoot}>
         {isSignedIn ? (
           <AuthenticatedApp />
         ) : (
           <UnauthenticatedApp isLoading={isSignedIn === undefined} />
         )}
-      </ThemeProvider>
-    </div>
+      </div>
+    </ThemeProvider>
   );
 }
 

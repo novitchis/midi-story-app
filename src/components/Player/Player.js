@@ -1,26 +1,43 @@
-import React from "react";
-import Unity, { UnityContent } from "react-unity-webgl";
+import React from 'react';
+import Unity, { UnityContent } from 'react-unity-webgl';
+import { Paper, withStyles } from '@material-ui/core';
 
 class Player extends React.Component {
   constructor(props) {
     super(props);
 
-    // Next up create a new Unity Content object to
-    // initialise and define your WebGL build. The
-    // paths are relative from your index html file.
-
     this.unityContent = new UnityContent(
-      "Player/Build.json",
-      "Player/UnityLoader.js"
+      'Player/Build.json',
+      'Player/UnityLoader.js'
     );
+
+    this.unityContent.on('loaded', () => {
+      this.setState({ unityLoaded: true });
+      this.unityContent.send('Sheet', 'ReceiveImage', props.fileURL);
+    });
   }
+  state = {
+    unityLoaded: false,
+  };
 
   render() {
-    // Finally render the Unity component and pass
-    // the Unity content through the props.
-
-    return <Unity unityContent={this.unityContent} />;
+    console.log(this.props.classes);
+    return (
+      <Paper elevation={1}>
+        <div
+          className={this.state.unityLoaded ? '' : this.props.classes.hidden}
+        >
+          <Unity unityContent={this.unityContent} />
+        </div>
+      </Paper>
+    );
   }
 }
 
-export default Player;
+const styles = (theme) => ({
+  hidden: {
+    visibility: 'hidden',
+  },
+});
+
+export default withStyles(styles)(Player);

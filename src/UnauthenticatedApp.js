@@ -1,43 +1,78 @@
-import React from "react";
-import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
-import * as firebaseui from "firebaseui";
-import firebase from "firebase";
+import React from 'react';
+import {
+  Container,
+  Typography,
+  Grid,
+  Divider,
+  makeStyles,
+} from '@material-ui/core';
+import Signin from './components/Signin';
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+
+const useStyles = makeStyles((theme) => ({
+  rootWrapper: {
+    padding: 20,
+  },
+  contentRoot: {
+    paddingTop: '20%',
+  },
+  mainTitle: {
+    marginTop: theme.spacing(5),
+    marginBottom: theme.spacing(5),
+    marginLeft: theme.spacing(6),
+  },
+  playIcon: {
+    verticalAlign: 'center',
+  },
+}));
 
 const UnauthenticatedApp = ({ isLoading }) => {
-  // Configure FirebaseUI.
-  const uiConfig = {
-    // Popup signin flow rather than redirect flow.
-    signInFlow: "popup",
-    // We will display Google and Facebook as auth providers.
-    signInOptions: [
-      firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      firebase.auth.EmailAuthProvider.PROVIDER_ID
-    ],
-    callbacks: {
-      // Avoid redirects after sign-in.
-      signInSuccessWithAuthResult: () => false
-    },
-    credentialHelper: firebaseui.auth.CredentialHelper.NONE
-  };
+  const classes = useStyles();
 
   return (
-    <div>
-      <header className="App-header">
-        <p>
-          <span style={{ color: "lightgreen" }}>midi</span>
-          <span style={{ color: "lightblue" }}>story</span>
-        </p>
-        {!isLoading && (
-          <>
-            <p>Register/Sign in:</p>
-            <StyledFirebaseAuth
-              uiConfig={uiConfig}
-              firebaseAuth={firebase.auth()}
-            />
-          </>
-        )}
-      </header>
+    <div className={classes.rootWrapper}>
+      {!isLoading && (
+        <Container maxWidth="lg">
+          <Grid className={classes.contentRoot} container spacing={2}>
+            <Grid item xs={8}>
+              <Typography
+                className={classes.mainTitle}
+                variant="h3"
+                gutterBottom
+              >
+                {'Welcome to '}
+                <Typography variant="h3" color="primary" component="span">
+                  Midistory
+                </Typography>
+              </Typography>
+              <Grid container alignItems="center" spacing={2} wrap="nowrap">
+                <Grid item>
+                  <PlayCircleFilledIcon
+                    color="primary"
+                    fontSize="large"
+                    className={classes.playIcon}
+                  />
+                </Grid>
+                <Grid item>
+                  <Typography variant="h5">
+                    {'Create beautiful '}
+                    <Typography variant="h5" color="primary" component="span">
+                      videos
+                    </Typography>
+                    {' from your midi files.'}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item>
+              <Divider orientation="vertical" />
+            </Grid>
+            <Grid item>
+              <Signin />
+            </Grid>
+          </Grid>
+        </Container>
+      )}
     </div>
   );
 };

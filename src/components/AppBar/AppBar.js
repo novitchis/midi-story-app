@@ -1,5 +1,5 @@
-import React from 'react'
-import firebase from 'firebase'
+import React from 'react';
+import firebase from 'firebase';
 import {
   AppBar,
   Toolbar,
@@ -13,10 +13,10 @@ import {
   Button,
   Grid,
   Divider,
-} from '@material-ui/core'
-import { AccountCircle } from '@material-ui/icons'
+} from '@material-ui/core';
+import { AccountCircle } from '@material-ui/icons';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
   },
@@ -31,28 +31,32 @@ const useStyles = makeStyles(theme => ({
   divider: {
     margin: theme.spacing(0, 2),
   },
-}))
+}));
 
 const AppBarComponent = () => {
-  const classes = useStyles()
-  const [anchorEl, setAnchorEl] = React.useState(null)
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const menuId = 'primary-search-account-menu'
+  const menuId = 'primary-search-account-menu';
 
-  const handleProfileMenuOpen = event => {
-    setAnchorEl(event.target)
-  }
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.target);
+  };
 
   const handleMenuClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
 
   return (
-    <AppBar position="static" elevation={0}>
+    <AppBar position="static" elevation={0} color="transparent">
       <Toolbar>
-        <Typography variant="h6" className={classes.grow} align="left">
-          <span style={{ color: 'lightgreen' }}>midi</span>
-          <span style={{ color: 'lightblue' }}>story</span>
+        <Typography
+          variant="h4"
+          className={classes.grow}
+          align="left"
+          color="primary"
+        >
+          Midistory
         </Typography>
         <IconButton
           edge="end"
@@ -62,7 +66,7 @@ const AppBarComponent = () => {
           onClick={handleProfileMenuOpen}
           color="inherit"
         >
-          <AccountCircle />
+          <AccountCircle fontSize="large" />
         </IconButton>
         <Popper
           open={Boolean(anchorEl)}
@@ -128,7 +132,7 @@ const AppBarComponent = () => {
         </Popper>
       </Toolbar>
     </AppBar>
-  )
-}
+  );
+};
 
-export default AppBarComponent
+export default AppBarComponent;
