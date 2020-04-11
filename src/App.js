@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
   appRoot: {
     background: theme.palette.background.default,
     color: '#EEEEEE',
-    height: '100vh',
+    minHeight: '100vh',
   },
 }));
 

@@ -67,10 +67,12 @@ const AuthenticatedApp = () => {
       <AppBarComponent />
       <div className={classes.contentRoot}>
         {fileURL ? (
-          <Box mx={4} textAlign="right">
-            <IconButton onClick={clearFile}>
-              <CloseIcon />
-            </IconButton>
+          <Box mx={4}>
+            <Box textAlign="right">
+              <IconButton onClick={clearFile} edge="end">
+                <CloseIcon />
+              </IconButton>
+            </Box>
             <Player fileURL={fileURL} />
           </Box>
         ) : (

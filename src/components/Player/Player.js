@@ -1,6 +1,6 @@
 import React from 'react';
 import Unity, { UnityContent } from 'react-unity-webgl';
-import { Paper, withStyles } from '@material-ui/core';
+import { Paper, withStyles, CircularProgress } from '@material-ui/core';
 
 class Player extends React.Component {
   constructor(props) {
@@ -21,14 +21,21 @@ class Player extends React.Component {
   };
 
   render() {
-    console.log(this.props.classes);
+    const { classes } = this.props;
     return (
-      <Paper elevation={1}>
+      <Paper elevation={1} className={classes.paper}>
         <div
-          className={this.state.unityLoaded ? '' : this.props.classes.hidden}
+          className={
+            classes.player +
+            ' ' +
+            (this.state.unityLoaded ? '' : classes.hidden)
+          }
         >
           <Unity unityContent={this.unityContent} />
         </div>
+        {!this.state.unityLoaded && (
+          <CircularProgress className={classes.progress} />
+        )}
       </Paper>
     );
   }
@@ -37,6 +44,23 @@ class Player extends React.Component {
 const styles = (theme) => ({
   hidden: {
     visibility: 'hidden',
+  },
+  paper: {
+    //16:9 aspect ration
+    paddingTop: '56.25%',
+    width: '100%',
+    position: 'relative',
+  },
+  player: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+  progress: {
+    top: '40%',
+    position: 'absolute',
   },
 });
 
