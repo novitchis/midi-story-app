@@ -13,8 +13,8 @@ const theme = {
       main: '#CF6679',
     },
     background: {
-      default: '#212121',
-      paper: '#212121',
+      default: '#181818',
+      paper: '#181818',
     },
     text: {
       primary: '#FFFFFF',
@@ -23,6 +23,21 @@ const theme = {
   typography: {
     button: {
       textTransform: 'none',
+    },
+  },
+  overrides: {
+    MuiPaper: {
+      root: {
+        boxShadow: 'none',
+      },
+      elevation1: {
+        background: '#1E1E1E',
+        boxShadow: 'none',
+      },
+      elevation2: {
+        background: '#212121',
+        boxShadow: 'none',
+      },
     },
   },
 };

@@ -18,8 +18,10 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
   },
   contentRoot: {
-    marginTop: 100,
-    padding: 20,
+    paddingTop: 180,
+    padding: theme.spacing(3),
+  },
+  centerContent: {
     textAlign: 'center',
   },
   icon: {
@@ -32,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 const AuthenticatedApp = () => {
   const [error, setError] = useState('');
-  const [fileURL, setFileURL] = useState();
+  const [file, setFile] = useState();
   const classes = useStyles();
 
   const handleFileChange = (e) => {
@@ -41,22 +43,28 @@ const AuthenticatedApp = () => {
         setError('Invalid file type. Please select a .mid file.');
       } else {
         setError('');
-        if (fileURL) window.URL.revokeObjectURL(fileURL);
+        if (file) window.URL.revokeObjectURL(file.url);
 
-        setFileURL(window.URL.createObjectURL(e.target.files[0]));
+        setFile({
+          name: e.target.files[0].name.substring(
+            0,
+            e.target.files[0].name.length - 4
+          ),
+          url: window.URL.createObjectURL(e.target.files[0]),
+        });
       }
     }
   };
 
   const clearFile = () => {
-    window.URL.revokeObjectURL(fileURL);
-    setFileURL(null);
+    if (file) window.URL.revokeObjectURL(file.url);
+    setFile(null);
   };
 
   useEffect(() => {
     // every file url needs to be revoked
     return () => {
-      if (fileURL) window.URL.revokeObjectURL(fileURL);
+      if (file) window.URL.revokeObjectURL(file.url);
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,17 +74,15 @@ const AuthenticatedApp = () => {
     <div>
       <AppBarComponent />
       <div className={classes.contentRoot}>
-        {fileURL ? (
-          <Box mx={4}>
-            <Box textAlign="right">
-              <IconButton onClick={clearFile} edge="end">
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            <Player fileURL={fileURL} />
-          </Box>
+        {file ? (
+          <Player fileURL={file.url} name={file.name} onClose={clearFile} />
         ) : (
-          <Grid container direction="column" spacing={4}>
+          <Grid
+            container
+            direction="column"
+            spacing={4}
+            className={classes.centerContent}
+          >
             <Grid item>
               <AlbumIcon className={classes.icon} color="disabled" />
             </Grid>

@@ -22,7 +22,9 @@ const useStyles = makeStyles((theme) => ({
   },
   popoverRoot: {
     textAlign: 'center',
-    width: 300,
+    width: 280,
+    padding: theme.spacing(2, 0),
+    border: `1px solid ${theme.palette.divider}`,
   },
   popoverAvatar: {
     fontSize: 64,
@@ -48,7 +50,7 @@ const AppBarComponent = () => {
   };
 
   return (
-    <AppBar position="static" elevation={0} color="transparent">
+    <AppBar elevation={1} color="inherit">
       <Toolbar>
         <Typography
           variant="h4"
@@ -73,6 +75,7 @@ const AppBarComponent = () => {
           anchorEl={anchorEl}
           role={undefined}
           placement="bottom"
+          style={{ zIndex: 2000 }}
           transition
         >
           {({ TransitionProps, placement }) => (
@@ -83,10 +86,9 @@ const AppBarComponent = () => {
                   placement === 'bottom' ? 'center top' : 'center bottom',
               }}
             >
-              <Paper>
+              <Paper elevation={2} className={classes.popoverRoot}>
                 <ClickAwayListener onClickAway={handleMenuClose}>
                   <Grid
-                    className={classes.popoverRoot}
                     container
                     spacing={4}
                     direction="column"

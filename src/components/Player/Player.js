@@ -1,6 +1,15 @@
 import React from 'react';
 import Unity, { UnityContent } from 'react-unity-webgl';
-import { Paper, withStyles, CircularProgress } from '@material-ui/core';
+import {
+  Paper,
+  withStyles,
+  CircularProgress,
+  Typography,
+  IconButton,
+  Grid,
+} from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import cx from 'class-names';
 
 class Player extends React.Component {
   constructor(props) {
@@ -21,22 +30,35 @@ class Player extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, name, onClose } = this.props;
     return (
-      <Paper elevation={1} className={classes.paper}>
-        <div
-          className={
-            classes.player +
-            ' ' +
-            (this.state.unityLoaded ? '' : classes.hidden)
-          }
-        >
-          <Unity unityContent={this.unityContent} />
-        </div>
-        {!this.state.unityLoaded && (
-          <CircularProgress className={classes.progress} />
-        )}
-      </Paper>
+      <div>
+        <Paper elevation={1} className={classes.paper}>
+          <div
+            className={cx(
+              classes.player,
+              !this.state.unityLoaded && classes.hidden
+            )}
+          >
+            <Unity unityContent={this.unityContent} />
+          </div>
+          {!this.state.unityLoaded && (
+            <CircularProgress className={classes.progress} />
+          )}
+        </Paper>
+        <Grid container noWrap className={classes.caption} alignItems="center">
+          <Grid item xs>
+            <Typography variant="h6" noWrap>
+              {name}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <IconButton edge="end" onClick={onClose}>
+              <CloseIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
+      </div>
     );
   }
 }
@@ -50,6 +72,7 @@ const styles = (theme) => ({
     paddingTop: '56.25%',
     width: '100%',
     position: 'relative',
+    textAlign: 'center',
   },
   player: {
     position: 'absolute',
@@ -59,8 +82,11 @@ const styles = (theme) => ({
     right: 0,
   },
   progress: {
-    top: '40%',
+    top: '45%',
     position: 'absolute',
+  },
+  caption: {
+    marginTop: theme.spacing(1),
   },
 });
 

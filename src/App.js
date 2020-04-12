@@ -13,7 +13,7 @@ import theme from './theme';
 const useStyles = makeStyles(() => ({
   appRoot: {
     background: theme.palette.background.default,
-    color: '#EEEEEE',
+    color: '#FFFFFF',
     minHeight: '100vh',
   },
 }));
