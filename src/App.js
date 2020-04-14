@@ -19,15 +19,16 @@ const useStyles = makeStyles(() => ({
 }));
 
 function App() {
-  const [isSignedIn, setIsSignedId] = useState();
   const classes = useStyles();
+  const [isSignedIn, setIsSignedId] = useState();
 
   useEffect(() => {
-    var unregisterAuthObserver = firebase
-      .auth()
-      .onAuthStateChanged((user) => setIsSignedId(Boolean(user)));
+    var unregisterAuthObserver = firebase.auth().onAuthStateChanged((user) => {
+      setIsSignedId(Boolean(user));
+    });
 
     return unregisterAuthObserver;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

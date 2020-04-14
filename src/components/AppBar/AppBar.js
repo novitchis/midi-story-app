@@ -15,6 +15,7 @@ import {
   Divider,
 } from '@material-ui/core';
 import { AccountCircle } from '@material-ui/icons';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -37,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 const AppBarComponent = () => {
   const classes = useStyles();
+  const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const menuId = 'primary-search-account-menu';
@@ -48,6 +50,10 @@ const AppBarComponent = () => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  // after the signout some render can occur before navigating
+  // with currentUser null
+  if (!firebase.auth().currentUser) return null;
 
   return (
     <AppBar elevation={1} color="inherit">
@@ -107,7 +113,12 @@ const AppBarComponent = () => {
                     <Grid item>
                       <Button
                         variant="outlined"
-                        onClick={() => firebase.auth().signOut()}
+                        onClick={() => {
+                          firebase
+                            .auth()
+                            .signOut()
+                            .then(() => history.push('/'));
+                        }}
                       >
                         Sign out
                       </Button>
