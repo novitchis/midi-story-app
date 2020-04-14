@@ -1,13 +1,14 @@
 import React from 'react';
-import AppBarComponent from './components/AppBar';
-import Project from './components/Project';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import firebase from 'firebase';
+import AppBar from './components/AppBar';
+import Project from './components/Project';
+import PageNotFound from './components/PageNotFound';
 
 const AuthenticatedApp = () => {
   return (
     <div>
-      <AppBarComponent />
+      <AppBar />
       <Switch>
         <Route path="/new" exact component={Project} />
         <Route
@@ -20,6 +21,7 @@ const AuthenticatedApp = () => {
             return <Redirect to="/new" />;
           }}
         />
+        <Route path="*" component={PageNotFound} />
       </Switch>
     </div>
   );

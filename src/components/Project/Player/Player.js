@@ -46,7 +46,12 @@ class Player extends React.Component {
             <CircularProgress className={classes.progress} />
           )}
         </Paper>
-        <Grid container noWrap className={classes.caption} alignItems="center">
+        <Grid
+          container
+          wrap="nowrap"
+          className={classes.caption}
+          alignItems="center"
+        >
           <Grid item xs>
             <Typography variant="h6" noWrap>
               {name}
