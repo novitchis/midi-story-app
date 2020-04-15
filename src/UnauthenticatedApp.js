@@ -4,6 +4,7 @@ import {
   Typography,
   Grid,
   Divider,
+  Hidden,
   makeStyles,
 } from '@material-ui/core';
 import Signin from './components/Signin';
@@ -64,9 +65,11 @@ const UnauthenticatedApp = ({ isLoading }) => {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item>
-              <Divider orientation="vertical" />
-            </Grid>
+            <Hidden smDown>
+              <Grid item>
+                <Divider orientation="vertical" />
+              </Grid>
+            </Hidden>
             <Grid item>
               <Signin />
             </Grid>
