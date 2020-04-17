@@ -9,6 +9,9 @@ import {
   Grid,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
+import PlayIcon from '@material-ui/icons/PlayArrow';
+import PauseIcon from '@material-ui/icons/Pause';
 import cx from 'class-names';
 
 class Player extends React.Component {
@@ -22,11 +25,27 @@ class Player extends React.Component {
 
     this.unityContent.on('loaded', () => {
       this.setState({ unityLoaded: true });
-      this.unityContent.send('Sheet', 'ReceiveImage', props.fileURL);
+      this.unityContent.send('Sheet', 'ReceiveFile', props.fileURL);
     });
   }
   state = {
     unityLoaded: false,
+    isPlaying: false,
+  };
+
+  handleSkipClick = () => {
+    this.unityContent.send('Sheet', 'GoToStart');
+    this.setState((state) => ({
+      isPlaying: !state.isPlaying,
+    }));
+  };
+
+  handlePlayPauseClick = (e) => {
+    this.unityContent.send('Sheet', this.state.isPlaying ? 'Pause' : 'Play');
+
+    this.setState((state) => ({
+      isPlaying: !state.isPlaying,
+    }));
   };
 
   render() {
@@ -45,6 +64,42 @@ class Player extends React.Component {
           {!this.state.unityLoaded && (
             <CircularProgress className={classes.progress} />
           )}
+          {this.state.unityLoaded && (
+            <div
+              className={classes.overlay}
+              onClick={this.handlePlayPauseClick}
+            >
+              <IconButton
+                onClick={onClose}
+                className={cx(classes.overlayIconButton, classes.close)}
+                disableRipple
+              >
+                <CloseIcon className={classes.overlayIcon} />
+              </IconButton>
+              <div className={classes.playbackRoot}>
+                <IconButton
+                  size="small"
+                  onClick={this.handleSkipClick}
+                  disableRipple
+                  className={classes.overlayIconButton}
+                >
+                  <SkipPreviousIcon className={classes.overlayIcon} />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  onClick={this.handlePlayPauseClick}
+                  disableRipple
+                  className={classes.overlayIconButton}
+                >
+                  {this.state.isPlaying ? (
+                    <PauseIcon className={classes.overlayIcon} />
+                  ) : (
+                    <PlayIcon className={classes.overlayIcon} />
+                  )}
+                </IconButton>
+              </div>
+            </div>
+          )}
         </Paper>
         <Grid
           container
@@ -57,11 +112,7 @@ class Player extends React.Component {
               {name}
             </Typography>
           </Grid>
-          <Grid item>
-            <IconButton edge="end" onClick={onClose}>
-              <CloseIcon />
-            </IconButton>
-          </Grid>
+          <Grid item></Grid>
         </Grid>
       </div>
     );
@@ -83,6 +134,11 @@ const styles = (theme) => ({
     width: '100%',
     position: 'relative',
     textAlign: 'center',
+    '&:hover': {
+      '& $overlay': {
+        display: 'inline-block',
+      },
+    },
   },
   player: {
     position: 'absolute',
@@ -97,6 +153,32 @@ const styles = (theme) => ({
   },
   caption: {
     marginTop: theme.spacing(1),
+  },
+  close: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+  },
+  overlayIconButton: {
+    '&:hover': {
+      background: 'none',
+    },
+  },
+  overlayIcon: {
+    fontSize: 28,
+  },
+  overlay: {
+    display: 'none',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
+  },
+  playbackRoot: {
+    position: 'absolute',
+    left: theme.spacing(1),
+    bottom: theme.spacing(1),
   },
 });
 
