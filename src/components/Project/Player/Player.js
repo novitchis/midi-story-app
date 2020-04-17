@@ -101,19 +101,9 @@ class Player extends React.Component {
             </div>
           )}
         </Paper>
-        <Grid
-          container
-          wrap="nowrap"
-          className={classes.caption}
-          alignItems="center"
-        >
-          <Grid item xs>
-            <Typography variant="h6" noWrap>
-              {name}
-            </Typography>
-          </Grid>
-          <Grid item></Grid>
-        </Grid>
+        <Typography variant="h6" noWrap className={classes.caption}>
+          {name}
+        </Typography>
       </div>
     );
   }
