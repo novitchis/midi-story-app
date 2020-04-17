@@ -32,7 +32,7 @@ class Player extends React.Component {
   render() {
     const { classes, name, onClose } = this.props;
     return (
-      <div>
+      <div className={classes.root}>
         <Paper elevation={1} className={classes.paper}>
           <div
             className={cx(
@@ -69,6 +69,11 @@ class Player extends React.Component {
 }
 
 const styles = (theme) => ({
+  root: {
+    maxWidth: 1280,
+    position: 'relative',
+    margin: 'auto',
+  },
   hidden: {
     visibility: 'hidden',
   },
