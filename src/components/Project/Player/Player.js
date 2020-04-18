@@ -6,11 +6,14 @@ import {
   CircularProgress,
   Typography,
   IconButton,
+  Tooltip,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
+import ReplayIcon from '@material-ui/icons/Replay';
+
 import cx from 'class-names';
 
 class Player extends React.Component {
@@ -26,10 +29,18 @@ class Player extends React.Component {
       this.setState({ unityLoaded: true });
       this.unityContent.send('Sheet', 'ReceiveFile', props.fileURL);
     });
+
+    this.unityContent.on('Finished', () => {
+      this.setState({ playback: 'finished' });
+    });
   }
   state = {
     unityLoaded: false,
-    isPlaying: false,
+    playback: 'stopped',
+  };
+
+  isPlaying = () => {
+    return this.state.playback === 'playing';
   };
 
   handleSkipClick = (e) => {
@@ -38,17 +49,17 @@ class Player extends React.Component {
 
     this.unityContent.send('Sheet', 'GoToStart');
     this.setState((state) => ({
-      isPlaying: !state.isPlaying,
+      playback: 'playing',
     }));
   };
 
   handlePlayPauseClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    this.unityContent.send('Sheet', this.state.isPlaying ? 'Pause' : 'Play');
+    this.unityContent.send('Sheet', this.isPlaying() ? 'Pause' : 'Play');
 
     this.setState((state) => ({
-      isPlaying: !state.isPlaying,
+      playback: state.playback === 'playing' ? 'paused' : 'playing',
     }));
   };
 
@@ -66,45 +77,62 @@ class Player extends React.Component {
             <Unity unityContent={this.unityContent} />
           </div>
           {!this.state.unityLoaded && (
-            <CircularProgress className={classes.progress} />
+            <CircularProgress className={classes.center} />
           )}
           {this.state.unityLoaded && (
             <div
               className={cx(
                 classes.overlay,
-                !this.state.isPlaying && classes.overlayVisible
+                !this.isPlaying() && classes.overlayVisible
               )}
               onClick={this.handlePlayPauseClick}
             >
-              <IconButton
-                onClick={onClose}
-                className={cx(classes.overlayIconButton, classes.close)}
-                disableRipple
-              >
-                <CloseIcon className={classes.overlayIcon} />
-              </IconButton>
-              <div className={classes.playbackRoot}>
+              <Tooltip title="Close">
                 <IconButton
-                  size="small"
-                  onClick={this.handleSkipClick}
+                  onClick={onClose}
+                  className={classes.close}
                   disableRipple
-                  className={classes.overlayIconButton}
                 >
-                  <SkipPreviousIcon className={classes.overlayIcon} />
+                  <CloseIcon />
                 </IconButton>
-                <IconButton
-                  size="small"
-                  onClick={this.handlePlayPauseClick}
-                  disableRipple
-                  className={classes.overlayIconButton}
-                >
-                  {this.state.isPlaying ? (
-                    <PauseIcon className={classes.overlayIcon} />
-                  ) : (
-                    <PlayIcon className={classes.overlayIcon} />
-                  )}
-                </IconButton>
-              </div>
+              </Tooltip>
+              {this.state.playback === 'finished' ? (
+                <Tooltip title="Replay">
+                  <IconButton
+                    onClick={this.handleSkipClick}
+                    className={classes.center}
+                  >
+                    <ReplayIcon fontSize="large" />
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                <div className={classes.playbackRoot}>
+                  <Tooltip title="Restart">
+                    <IconButton
+                      size="small"
+                      onClick={this.handleSkipClick}
+                      disableRipple
+                      className={classes.overlayIconButton}
+                    >
+                      <SkipPreviousIcon className={classes.overlayIcon} />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title={this.isPlaying() ? 'Pause' : 'Play'}>
+                    <IconButton
+                      size="small"
+                      onClick={this.handlePlayPauseClick}
+                      disableRipple
+                      className={classes.overlayIconButton}
+                    >
+                      {this.isPlaying() ? (
+                        <PauseIcon className={classes.overlayIcon} />
+                      ) : (
+                        <PlayIcon className={classes.overlayIcon} />
+                      )}
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              )}
             </div>
           )}
         </Paper>
@@ -144,7 +172,7 @@ const styles = (theme) => ({
     bottom: 0,
     right: 0,
   },
-  progress: {
+  center: {
     top: '45%',
     position: 'absolute',
   },
