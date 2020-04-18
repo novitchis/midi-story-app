@@ -6,7 +6,6 @@ import {
   CircularProgress,
   Typography,
   IconButton,
-  Grid,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
@@ -33,7 +32,10 @@ class Player extends React.Component {
     isPlaying: false,
   };
 
-  handleSkipClick = () => {
+  handleSkipClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     this.unityContent.send('Sheet', 'GoToStart');
     this.setState((state) => ({
       isPlaying: !state.isPlaying,
@@ -41,6 +43,8 @@ class Player extends React.Component {
   };
 
   handlePlayPauseClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     this.unityContent.send('Sheet', this.state.isPlaying ? 'Pause' : 'Play');
 
     this.setState((state) => ({
@@ -66,7 +70,10 @@ class Player extends React.Component {
           )}
           {this.state.unityLoaded && (
             <div
-              className={classes.overlay}
+              className={cx(
+                classes.overlay,
+                !this.state.isPlaying && classes.overlayVisible
+              )}
               onClick={this.handlePlayPauseClick}
             >
               <IconButton
@@ -126,7 +133,7 @@ const styles = (theme) => ({
     textAlign: 'center',
     '&:hover': {
       '& $overlay': {
-        display: 'inline-block',
+        display: 'block',
       },
     },
   },
@@ -158,12 +165,17 @@ const styles = (theme) => ({
     fontSize: 28,
   },
   overlay: {
+    background:
+      'linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.05), rgba(0,0,0,0.2))',
     display: 'none',
     position: 'absolute',
     top: 0,
     bottom: 0,
     right: 0,
     left: 0,
+  },
+  overlayVisible: {
+    display: 'block',
   },
   playbackRoot: {
     position: 'absolute',
