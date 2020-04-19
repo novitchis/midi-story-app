@@ -7,12 +7,14 @@ import {
   Typography,
   IconButton,
   Tooltip,
+  Grid,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import ReplayIcon from '@material-ui/icons/Replay';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 import cx from 'class-names';
 
@@ -77,7 +79,9 @@ class Player extends React.Component {
             <Unity unityContent={this.unityContent} />
           </div>
           {!this.state.unityLoaded && (
-            <CircularProgress className={classes.center} />
+            <div className={classes.center}>
+              <CircularProgress />
+            </div>
           )}
           {this.state.unityLoaded && (
             <div
@@ -97,40 +101,58 @@ class Player extends React.Component {
                 </IconButton>
               </Tooltip>
               {this.state.playback === 'finished' ? (
-                <Tooltip title="Replay">
-                  <IconButton
-                    onClick={this.handleSkipClick}
-                    className={classes.center}
-                  >
-                    <ReplayIcon fontSize="large" />
-                  </IconButton>
-                </Tooltip>
+                <div className={classes.center}>
+                  <Tooltip title="Replay">
+                    <IconButton onClick={this.handleSkipClick}>
+                      <ReplayIcon fontSize="large" />
+                    </IconButton>
+                  </Tooltip>
+                </div>
               ) : (
                 <div className={classes.playbackRoot}>
-                  <Tooltip title="Restart">
-                    <IconButton
-                      size="small"
-                      onClick={this.handleSkipClick}
-                      disableRipple
-                      className={classes.overlayIconButton}
-                    >
-                      <SkipPreviousIcon className={classes.overlayIcon} />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title={this.isPlaying() ? 'Pause' : 'Play'}>
-                    <IconButton
-                      size="small"
-                      onClick={this.handlePlayPauseClick}
-                      disableRipple
-                      className={classes.overlayIconButton}
-                    >
-                      {this.isPlaying() ? (
-                        <PauseIcon className={classes.overlayIcon} />
-                      ) : (
-                        <PlayIcon className={classes.overlayIcon} />
-                      )}
-                    </IconButton>
-                  </Tooltip>
+                  <Grid container>
+                    <Grid item>
+                      <Tooltip title="Restart">
+                        <IconButton
+                          size="small"
+                          onClick={this.handleSkipClick}
+                          disableRipple
+                          className={classes.overlayIconButton}
+                        >
+                          <SkipPreviousIcon className={classes.overlayIcon} />
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
+                    <Grid item>
+                      <Tooltip title={this.isPlaying() ? 'Pause' : 'Play'}>
+                        <IconButton
+                          size="small"
+                          onClick={this.handlePlayPauseClick}
+                          disableRipple
+                          className={classes.overlayIconButton}
+                        >
+                          {this.isPlaying() ? (
+                            <PauseIcon className={classes.overlayIcon} />
+                          ) : (
+                            <PlayIcon className={classes.overlayIcon} />
+                          )}
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
+                    <Grid item xs />
+                    <Grid item>
+                      {/* <Tooltip title="Settings" className={classes.settings}>
+                        <IconButton
+                          size="small"
+                          onClick={this.handleSkipClick}
+                          disableRipple
+                          className={classes.overlayIconButton}
+                        >
+                          <SettingsIcon />
+                        </IconButton>
+                      </Tooltip> */}
+                    </Grid>
+                  </Grid>
                 </div>
               )}
             </div>
@@ -173,8 +195,16 @@ const styles = (theme) => ({
     right: 0,
   },
   center: {
-    top: '45%',
     position: 'absolute',
+    top: 0,
+    left: 0,
+    // visualy looks like it is note centered since the keyboard is offsetted
+    // offset the position to look more centered
+    bottom: 8,
+    right: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   caption: {
     marginTop: theme.spacing(1),
@@ -208,6 +238,7 @@ const styles = (theme) => ({
   playbackRoot: {
     position: 'absolute',
     left: theme.spacing(1),
+    right: theme.spacing(1),
     bottom: theme.spacing(1),
   },
 });
