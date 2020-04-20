@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import Signin from './components/Signin';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import DocumentTitle from 'react-document-title';
 
 const useStyles = makeStyles((theme) => ({
   rootWrapper: {
@@ -32,6 +33,9 @@ const UnauthenticatedApp = ({ isLoading }) => {
 
   return (
     <div className={classes.rootWrapper}>
+      <DocumentTitle
+        title={'Midistory – Create beautiful videos from your midi files.'}
+      />
       {!isLoading && (
         <Container maxWidth="lg">
           <Grid className={classes.contentRoot} container spacing={2}>

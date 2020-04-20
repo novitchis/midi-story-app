@@ -33,7 +33,7 @@ const Signin = () => {
   return (
     <div>
       <Typography variant="h6" className={classes.label}>
-        Sign in to start creating
+        Get access
       </Typography>
       <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
     </div>
