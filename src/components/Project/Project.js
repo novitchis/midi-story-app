@@ -3,6 +3,7 @@ import { makeStyles, Typography, Fab, Grid } from '@material-ui/core';
 import AlbumIcon from '@material-ui/icons/Album';
 import AddIcon from '@material-ui/icons/Add';
 import Player from './Player';
+import firebase from 'firebase';
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -42,6 +43,10 @@ const Project = () => {
             e.target.files[0].name.length - 4
           ),
           url: window.URL.createObjectURL(e.target.files[0]),
+        });
+        firebase.analytics().logEvent('file_selected', {
+          name: e.target.files[0].name,
+          size: e.target.files[0].size,
         });
       }
     }
