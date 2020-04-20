@@ -14,8 +14,7 @@ import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import ReplayIcon from '@material-ui/icons/Replay';
-import SettingsIcon from '@material-ui/icons/Settings';
-
+// import SettingsIcon from '@material-ui/icons/Settings';
 import cx from 'class-names';
 
 class Player extends React.Component {
@@ -32,12 +31,17 @@ class Player extends React.Component {
       this.unityContent.send('Sheet', 'ReceiveFile', props.fileURL);
     });
 
+    this.unityContent.on('FileLoaded', () => {
+      this.setState({ fileLoaded: true });
+    });
+
     this.unityContent.on('Finished', () => {
       this.setState({ playback: 'finished' });
     });
   }
   state = {
     unityLoaded: false,
+    fileLoaded: false,
     playback: 'stopped',
   };
 
@@ -83,7 +87,7 @@ class Player extends React.Component {
               <CircularProgress />
             </div>
           )}
-          {this.state.unityLoaded && (
+          {this.state.fileLoaded && (
             <div
               className={cx(
                 classes.overlay,
@@ -91,15 +95,6 @@ class Player extends React.Component {
               )}
               onClick={this.handlePlayPauseClick}
             >
-              <Tooltip title="Close">
-                <IconButton
-                  onClick={onClose}
-                  className={classes.close}
-                  disableRipple
-                >
-                  <CloseIcon />
-                </IconButton>
-              </Tooltip>
               {this.state.playback === 'finished' ? (
                 <div className={classes.center}>
                   <Tooltip title="Replay">
@@ -155,6 +150,15 @@ class Player extends React.Component {
                   </Grid>
                 </div>
               )}
+              <Tooltip title="Close">
+                <IconButton
+                  onClick={onClose}
+                  className={classes.close}
+                  disableRipple
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Tooltip>
             </div>
           )}
         </Paper>
