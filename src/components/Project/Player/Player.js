@@ -104,39 +104,52 @@ class Player extends React.Component {
                   </Tooltip>
                 </div>
               ) : (
-                <div className={classes.playbackRoot}>
-                  <Grid container>
-                    <Grid item>
-                      <Tooltip title="Restart">
+                <>
+                  {this.state.playback === 'stopped' && (
+                    <div className={classes.center}>
+                      <Tooltip title="Play">
                         <IconButton
-                          size="small"
-                          onClick={this.handleSkipClick}
-                          disableRipple
-                          className={classes.overlayIconButton}
-                        >
-                          <SkipPreviousIcon className={classes.overlayIcon} />
-                        </IconButton>
-                      </Tooltip>
-                    </Grid>
-                    <Grid item>
-                      <Tooltip title={this.isPlaying() ? 'Pause' : 'Play'}>
-                        <IconButton
-                          size="small"
                           onClick={this.handlePlayPauseClick}
-                          disableRipple
-                          className={classes.overlayIconButton}
+                          color="primary"
                         >
-                          {this.isPlaying() ? (
-                            <PauseIcon className={classes.overlayIcon} />
-                          ) : (
-                            <PlayIcon className={classes.overlayIcon} />
-                          )}
+                          <PlayIcon className={classes.largePlayIcon} />
                         </IconButton>
                       </Tooltip>
-                    </Grid>
-                    <Grid item xs />
-                    <Grid item>
-                      {/* <Tooltip title="Settings" className={classes.settings}>
+                    </div>
+                  )}
+                  <div className={classes.playbackRoot}>
+                    <Grid container>
+                      <Grid item>
+                        <Tooltip title="Restart">
+                          <IconButton
+                            size="small"
+                            onClick={this.handleSkipClick}
+                            disableRipple
+                            className={classes.overlayIconButton}
+                          >
+                            <SkipPreviousIcon className={classes.overlayIcon} />
+                          </IconButton>
+                        </Tooltip>
+                      </Grid>
+                      <Grid item>
+                        <Tooltip title={this.isPlaying() ? 'Pause' : 'Play'}>
+                          <IconButton
+                            size="small"
+                            onClick={this.handlePlayPauseClick}
+                            disableRipple
+                            className={classes.overlayIconButton}
+                          >
+                            {this.isPlaying() ? (
+                              <PauseIcon className={classes.overlayIcon} />
+                            ) : (
+                              <PlayIcon className={classes.overlayIcon} />
+                            )}
+                          </IconButton>
+                        </Tooltip>
+                      </Grid>
+                      <Grid item xs />
+                      <Grid item>
+                        {/* <Tooltip title="Settings" className={classes.settings}>
                         <IconButton
                           size="small"
                           onClick={this.handleSkipClick}
@@ -146,9 +159,10 @@ class Player extends React.Component {
                           <SettingsIcon />
                         </IconButton>
                       </Tooltip> */}
+                      </Grid>
                     </Grid>
-                  </Grid>
-                </div>
+                  </div>
+                </>
               )}
               <Tooltip title="Close">
                 <IconButton
@@ -217,6 +231,9 @@ const styles = (theme) => ({
     position: 'absolute',
     top: 0,
     right: 0,
+  },
+  largePlayIcon: {
+    fontSize: 64,
   },
   overlayIconButton: {
     '&:hover': {
