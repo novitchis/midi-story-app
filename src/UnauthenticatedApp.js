@@ -39,7 +39,7 @@ const UnauthenticatedApp = ({ isLoading }) => {
       {!isLoading && (
         <Container maxWidth="lg">
           <Grid className={classes.contentRoot} container spacing={2}>
-            <Grid item xs={8}>
+            <Grid item md={8} xs={12}>
               <Typography
                 className={classes.mainTitle}
                 variant="h3"
@@ -69,11 +69,11 @@ const UnauthenticatedApp = ({ isLoading }) => {
                 </Grid>
               </Grid>
             </Grid>
-            <Hidden smDown>
-              <Grid item>
+            <Grid item>
+              <Hidden smDown>
                 <Divider orientation="vertical" />
-              </Grid>
-            </Hidden>
+              </Hidden>
+            </Grid>
             <Grid item>
               <Signin />
             </Grid>
