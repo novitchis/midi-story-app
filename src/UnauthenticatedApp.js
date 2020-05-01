@@ -78,11 +78,6 @@ const UnauthenticatedApp = ({ isLoading }) => {
                   </Grid>
                 </Grid>
                 <Grid item>
-                  <Hidden smDown>
-                    <Divider orientation="vertical" />
-                  </Hidden>
-                </Grid>
-                <Grid item>
                   <Signin />
                 </Grid>
               </Grid>
