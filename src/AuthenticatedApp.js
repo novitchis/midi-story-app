@@ -4,6 +4,7 @@ import firebase from 'firebase';
 import AppBar from './components/AppBar';
 import Project from './components/Project';
 import PageNotFound from './components/PageNotFound';
+import Policies from './components/Policies';
 
 const AuthenticatedApp = () => {
   return (
@@ -12,6 +13,7 @@ const AuthenticatedApp = () => {
       <Switch>
         <Route path="/new" exact component={Project} />
         <Route path="/player" exact component={Project} />
+        <Route path="/policies/:policy" component={Policies} />
         <Route
           path="/"
           exact

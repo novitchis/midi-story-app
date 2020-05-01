@@ -15,6 +15,8 @@ const useStyles = makeStyles(() => ({
     background: theme.palette.background.default,
     color: '#FFFFFF',
     minHeight: '100vh',
+    padding: 20,
+    boxSizing: 'border-box',
   },
 }));
 

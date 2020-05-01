@@ -44,7 +44,6 @@ const PageNotFound = ({ history }) => {
           </Button>
         </Grid>
       </Grid>
-      )}
     </div>
   );
 };

@@ -248,7 +248,7 @@ const styles = (theme) => ({
   },
   overlay: {
     background:
-      'linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.05), rgba(0,0,0,0.3))',
+      'linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0.05), rgba(0,0,0,0.3))',
     display: 'none',
     position: 'absolute',
     top: 0,

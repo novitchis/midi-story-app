@@ -15,7 +15,7 @@ import {
   Divider,
 } from '@material-ui/core';
 import { AccountCircle } from '@material-ui/icons';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -51,98 +51,111 @@ const AppBarComponent = () => {
     setAnchorEl(null);
   };
 
-  // after the signout some render can occur before navigating
-  // with currentUser null
-  if (!firebase.auth().currentUser) return null;
-
   return (
     <AppBar elevation={1} color="inherit">
       <Toolbar>
-        <Typography
-          variant="h4"
-          className={classes.grow}
-          align="left"
-          color="primary"
-        >
-          Midistory
-        </Typography>
-        <IconButton
-          edge="end"
-          aria-label="account of current user"
-          aria-controls={menuId}
-          aria-haspopup="true"
-          onClick={handleProfileMenuOpen}
-          color="inherit"
-        >
-          <AccountCircle fontSize="large" />
-        </IconButton>
-        <Popper
-          open={Boolean(anchorEl)}
-          anchorEl={anchorEl}
-          role={undefined}
-          placement="bottom"
-          style={{ zIndex: 2000 }}
-          transition
-        >
-          {({ TransitionProps, placement }) => (
-            <Grow
-              {...TransitionProps}
-              style={{
-                transformOrigin:
-                  placement === 'bottom' ? 'center top' : 'center bottom',
-              }}
+        <Link to="/">
+          <Typography variant="h4" color="primary">
+            Midistory
+          </Typography>
+        </Link>
+        <div className={classes.grow}></div>
+
+        {firebase.auth().currentUser && (
+          <>
+            <IconButton
+              edge="end"
+              aria-label="account of current user"
+              aria-controls={menuId}
+              aria-haspopup="true"
+              onClick={handleProfileMenuOpen}
+              color="inherit"
             >
-              <Paper elevation={2} className={classes.popoverRoot}>
-                <ClickAwayListener onClickAway={handleMenuClose}>
-                  <Grid
-                    container
-                    spacing={4}
-                    direction="column"
-                    justify="center"
-                  >
-                    <Grid item>
-                      <AccountCircle className={classes.popoverAvatar} />
-                      <Typography>
-                        {firebase.auth().currentUser.displayName}
-                      </Typography>
-                      <Typography variant="body2">
-                        {firebase.auth().currentUser.email}
-                      </Typography>
-                    </Grid>
-                    <Divider className={classes.divider} />
-                    <Grid item>
-                      <Button
-                        variant="outlined"
-                        onClick={() => {
-                          firebase
-                            .auth()
-                            .signOut()
-                            .then(() => history.push('/'));
-                        }}
+              <AccountCircle fontSize="large" />
+            </IconButton>
+            <Popper
+              open={Boolean(anchorEl)}
+              anchorEl={anchorEl}
+              role={undefined}
+              placement="bottom"
+              style={{ zIndex: 2000 }}
+              transition
+            >
+              {({ TransitionProps, placement }) => (
+                <Grow
+                  {...TransitionProps}
+                  style={{
+                    transformOrigin:
+                      placement === 'bottom' ? 'center top' : 'center bottom',
+                  }}
+                >
+                  <Paper elevation={2} className={classes.popoverRoot}>
+                    <ClickAwayListener onClickAway={handleMenuClose}>
+                      <Grid
+                        container
+                        spacing={4}
+                        direction="column"
+                        justify="center"
                       >
-                        Sign out
-                      </Button>
-                    </Grid>
-                    <Divider className={classes.divider} />
-                    <Grid item>
-                      <Button href="/">
-                        <Typography variant="caption">
-                          Privacy Policy
-                        </Typography>
-                      </Button>
-                      •
-                      <Button href="/">
-                        <Typography variant="caption">
-                          Terms of service
-                        </Typography>
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
+                        <Grid item>
+                          <AccountCircle className={classes.popoverAvatar} />
+                          <Typography>
+                            {firebase.auth().currentUser.displayName}
+                          </Typography>
+                          <Typography variant="body2">
+                            {firebase.auth().currentUser.email}
+                          </Typography>
+                        </Grid>
+                        <Divider className={classes.divider} />
+                        <Grid item>
+                          <Button
+                            variant="outlined"
+                            onClick={() => {
+                              firebase
+                                .auth()
+                                .signOut()
+                                .then(() => history.push('/'));
+                            }}
+                          >
+                            Sign out
+                          </Button>
+                        </Grid>
+                        <Divider className={classes.divider} />
+                        <Grid
+                          item
+                          container
+                          spacing={1}
+                          justify="center"
+                          alignItems="center"
+                        >
+                          <Grid item>
+                            <Link to="/policies/privacy">
+                              <Button onClick={handleMenuClose}>
+                                <Typography variant="caption">
+                                  Privacy Policy
+                                </Typography>
+                              </Button>
+                            </Link>
+                          </Grid>
+                          <Grid item>•</Grid>
+                          <Grid item>
+                            <Link to="/policies/terms">
+                              <Button onClick={handleMenuClose}>
+                                <Typography variant="caption">
+                                  Terms of service
+                                </Typography>
+                              </Button>
+                            </Link>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </ClickAwayListener>
+                  </Paper>
+                </Grow>
+              )}
+            </Popper>
+          </>
+        )}
       </Toolbar>
     </AppBar>
   );
