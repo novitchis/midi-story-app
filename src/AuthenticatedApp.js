@@ -11,6 +11,7 @@ const AuthenticatedApp = () => {
       <AppBar />
       <Switch>
         <Route path="/new" exact component={Project} />
+        <Route path="/player" exact component={Project} />
         <Route
           path="/"
           exact

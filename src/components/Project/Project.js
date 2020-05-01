@@ -25,10 +25,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Project = () => {
+const Project = ({ history }) => {
   const [error, setError] = useState('');
   const [file, setFile] = useState();
   const classes = useStyles();
+
+  useEffect(() => {
+    if (!file) history.push('/new');
+    else history.push('/player');
+  }, [file, history]);
 
   const handleFileChange = (e) => {
     if (e.target.files.length === 1) {
@@ -87,7 +92,7 @@ const Project = () => {
           </Grid>
           <Grid item>
             <Typography variant="h5">
-              Select your midi file to start your project
+              Select a midi file to start your project
             </Typography>
           </Grid>
           <Grid item>
