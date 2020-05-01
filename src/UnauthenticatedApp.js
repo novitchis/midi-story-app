@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Container,
-  Typography,
-  Grid,
-  Divider,
-  Hidden,
-  makeStyles,
-} from '@material-ui/core';
+import { Container, Typography, Grid, makeStyles } from '@material-ui/core';
 import Signin from './components/Signin';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import DocumentTitle from 'react-document-title';
@@ -42,7 +35,12 @@ const UnauthenticatedApp = ({ isLoading }) => {
           />
           {!isLoading && (
             <Container maxWidth="lg">
-              <Grid className={classes.contentRoot} container spacing={2}>
+              <Grid
+                className={classes.contentRoot}
+                container
+                spacing={2}
+                wrap="nowrap"
+              >
                 <Grid item md={8} xs={12}>
                   <Typography
                     className={classes.mainTitle}
