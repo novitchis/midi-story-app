@@ -270,7 +270,10 @@ const Terms = () => {
       </p>
 
       <ul>
-        <li>By email: support@midistory.com</li>
+        <li>
+          By email:{' '}
+          <a href="mailto:support@midistory.com">support@midistory.com</a>
+        </li>
       </ul>
     </div>
   );

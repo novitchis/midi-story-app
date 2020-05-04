@@ -4,10 +4,20 @@ import { useParams } from 'react-router-dom';
 import AppBar from '../AppBar';
 import Privacy from './Privacy';
 import Terms from './Terms';
+import Cookies from './Cookies';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: 64,
+    '& p': {
+      color: '#D0D0D0',
+    },
+    '& li': {
+      color: '#D0D0D0',
+    },
+    '& a': {
+      color: theme.palette.secondary.main,
+    },
   },
   tabPanel: {
     padding: theme.spacing(4),
@@ -42,6 +52,12 @@ const PrivacyPolicy = ({ history }) => {
           id="tab-1"
           aria-controls="tabpanel-1"
         />
+        <Tab
+          value="cookies"
+          label="Cookie Policy"
+          id="tab-2"
+          aria-controls="tabpanel-2"
+        />
       </Tabs>
       {policy === 'privacy' && (
         <Paper
@@ -61,6 +77,16 @@ const PrivacyPolicy = ({ history }) => {
           square
         >
           <Terms />
+        </Paper>
+      )}
+      {policy === 'cookies' && (
+        <Paper
+          id="tabpanel-2"
+          aria-labelledby="tab-2"
+          className={classes.tabPanel}
+          square
+        >
+          <Cookies />
         </Paper>
       )}
     </div>
