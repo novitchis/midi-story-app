@@ -52,7 +52,7 @@ const Signin = () => {
       </Grid>
       <Grid item className={classes.gridItem}>
         <Typography variant="caption">
-          By continuing, you agree to our{' '}
+          By proceeding, you agree to our{' '}
           <RouterLink to="/policies/privacy">
             <Typography variant="caption" color="secondary">
               privacy policy
