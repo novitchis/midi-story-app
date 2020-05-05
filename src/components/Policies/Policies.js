@@ -10,10 +10,10 @@ const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: 64,
     '& p': {
-      color: '#D0D0D0',
+      color: theme.palette.text.secondary,
     },
     '& li': {
-      color: '#D0D0D0',
+      color: theme.palette.text.secondary,
     },
     '& a': {
       color: theme.palette.secondary.main,

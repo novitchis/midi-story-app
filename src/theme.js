@@ -36,6 +36,7 @@ const theme = {
     },
     text: {
       primary: '#FFFFFF',
+      secondary: '#D0D0D0',
     },
   },
   typography: {

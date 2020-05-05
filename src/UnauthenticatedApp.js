@@ -6,6 +6,8 @@ import DocumentTitle from 'react-document-title';
 import { Switch, Route } from 'react-router-dom';
 import Policies from './components/Policies';
 import CookiesBanner from './components/Policies/CookiesBanner';
+import mobileAndTabletCheck from './utils/mobileAndTabletCheck';
+import UnsupportedMobile from './components/UnsupportedMobile';
 
 const useStyles = makeStyles((theme) => ({
   rootWrapper: {},
@@ -24,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 
 const UnauthenticatedApp = ({ isLoading }) => {
   const classes = useStyles();
+  const isMobileBrowser = mobileAndTabletCheck();
 
   return (
     <div className={classes.rootWrapper}>
@@ -40,7 +43,7 @@ const UnauthenticatedApp = ({ isLoading }) => {
                 className={classes.contentRoot}
                 container
                 spacing={2}
-                wrap="nowrap"
+                wrap={isMobileBrowser ? 'wrap' : 'nowrap'}
               >
                 <Grid item md={8} xs={12}>
                   <Typography
@@ -76,9 +79,15 @@ const UnauthenticatedApp = ({ isLoading }) => {
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item>
-                  <Signin />
-                </Grid>
+                {!isMobileBrowser ? (
+                  <Grid item>
+                    <Signin />
+                  </Grid>
+                ) : (
+                  <Grid item md={12} xs={12}>
+                    <UnsupportedMobile />
+                  </Grid>
+                )}
               </Grid>
             </Container>
           )}
