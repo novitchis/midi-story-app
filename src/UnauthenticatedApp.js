@@ -5,6 +5,7 @@ import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import DocumentTitle from 'react-document-title';
 import { Switch, Route } from 'react-router-dom';
 import Policies from './components/Policies';
+import CookiesBanner from './components/Policies/CookiesBanner';
 
 const useStyles = makeStyles((theme) => ({
   rootWrapper: {},
@@ -83,6 +84,7 @@ const UnauthenticatedApp = ({ isLoading }) => {
           )}
         </Route>
       </Switch>
+      <CookiesBanner />
     </div>
   );
 };
