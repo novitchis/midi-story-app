@@ -14,8 +14,10 @@ import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import ReplayIcon from '@material-ui/icons/Replay';
+import DownloadIcon from '@material-ui/icons/GetApp';
 // import SettingsIcon from '@material-ui/icons/Settings';
 import cx from 'class-names';
+import ExportDialog from './ExportDialog';
 
 class Player extends React.Component {
   constructor(props) {
@@ -43,6 +45,11 @@ class Player extends React.Component {
     unityLoaded: false,
     fileLoaded: false,
     playback: 'stopped',
+    export: false,
+  };
+
+  componentWillUnmount = () => {
+    this.unityContent.remove();
   };
 
   isPlaying = () => {
@@ -67,6 +74,15 @@ class Player extends React.Component {
     this.setState((state) => ({
       playback: state.playback === 'playing' ? 'paused' : 'playing',
     }));
+  };
+
+  handleExportVideoClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (this.isPlaying()) this.handlePlayPauseClick(e);
+
+    this.setState({ export: true });
   };
 
   render() {
@@ -105,7 +121,7 @@ class Player extends React.Component {
                 </div>
               ) : (
                 <>
-                  {this.state.playback === 'stopped' ? (
+                  {this.state.playback === 'stopped' && (
                     <div className={classes.center}>
                       <Tooltip title="Play">
                         <IconButton
@@ -116,55 +132,64 @@ class Player extends React.Component {
                         </IconButton>
                       </Tooltip>
                     </div>
-                  ) : (
-                    <div className={classes.playbackRoot}>
-                      <Grid container>
-                        <Grid item>
-                          <Tooltip title="Restart">
-                            <IconButton
-                              size="small"
-                              onClick={this.handleSkipClick}
-                              disableRipple
-                              className={classes.overlayIconButton}
-                            >
-                              <SkipPreviousIcon
-                                className={classes.overlayIcon}
-                              />
-                            </IconButton>
-                          </Tooltip>
-                        </Grid>
-                        <Grid item>
-                          <Tooltip title={this.isPlaying() ? 'Pause' : 'Play'}>
-                            <IconButton
-                              size="small"
-                              onClick={this.handlePlayPauseClick}
-                              disableRipple
-                              className={classes.overlayIconButton}
-                            >
-                              {this.isPlaying() ? (
-                                <PauseIcon className={classes.overlayIcon} />
-                              ) : (
-                                <PlayIcon className={classes.overlayIcon} />
-                              )}
-                            </IconButton>
-                          </Tooltip>
-                        </Grid>
-                        <Grid item xs />
-                        <Grid item>
-                          {/* <Tooltip title="Settings" className={classes.settings}>
-                        <IconButton
-                          size="small"
-                          onClick={this.handleSkipClick}
-                          disableRipple
-                          className={classes.overlayIconButton}
-                        >
-                          <SettingsIcon />
-                        </IconButton>
-                      </Tooltip> */}
-                        </Grid>
-                      </Grid>
-                    </div>
                   )}
+                  <div className={classes.playbackRoot}>
+                    <Grid container>
+                      {this.state.playback !== 'stopped' && (
+                        <>
+                          <Grid item>
+                            <Tooltip title="Restart">
+                              <IconButton
+                                size="small"
+                                onClick={this.handleSkipClick}
+                                disableRipple
+                                className={classes.overlayIconButton}
+                              >
+                                <SkipPreviousIcon
+                                  className={classes.overlayIcon}
+                                />
+                              </IconButton>
+                            </Tooltip>
+                          </Grid>
+                          <Grid item>
+                            <Tooltip
+                              title={this.isPlaying() ? 'Pause' : 'Play'}
+                            >
+                              <IconButton
+                                size="small"
+                                onClick={this.handlePlayPauseClick}
+                                disableRipple
+                                className={classes.overlayIconButton}
+                              >
+                                {this.isPlaying() ? (
+                                  <PauseIcon className={classes.overlayIcon} />
+                                ) : (
+                                  <PlayIcon className={classes.overlayIcon} />
+                                )}
+                              </IconButton>
+                            </Tooltip>
+                          </Grid>
+                        </>
+                      )}
+                      <Grid item xs />
+                      <Grid item>
+                        <Tooltip
+                          title="Export Video"
+                          className={classes.settings}
+                        >
+                          <IconButton
+                            size="small"
+                            disableRipple
+                            onClick={this.handleExportVideoClick}
+                            className={classes.overlayIconButton}
+                          >
+                            <DownloadIcon className={classes.overlayIcon} />{' '}
+                            <Typography variant="button">Video</Typography>
+                          </IconButton>
+                        </Tooltip>
+                      </Grid>
+                    </Grid>
+                  </div>
                 </>
               )}
               <Tooltip title="Close">
@@ -182,6 +207,11 @@ class Player extends React.Component {
         <Typography variant="h6" noWrap className={classes.caption}>
           {name}
         </Typography>
+        <ExportDialog
+          onClose={() => this.setState({ export: false })}
+          unityContent={this.unityContent}
+          open={this.state.export}
+        />
       </div>
     );
   }

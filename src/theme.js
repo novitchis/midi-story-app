@@ -58,6 +58,11 @@ const theme = {
         boxShadow: 'none',
       },
     },
+    MuiDialogActions: {
+      spacing: {
+        padding: '8px 24px 16px 8px',
+      },
+    },
   },
 };
 
