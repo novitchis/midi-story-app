@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ExportDialog = ({ onClose, open, unityContent }) => {
+const ExportDialog = ({ onClose, open, unityContent, fileInfo }) => {
   const classes = useStyles();
   const [isExporting, setIsExporting] = useState(false);
   const { encoder, error } = useEncoder();
@@ -110,8 +110,9 @@ const ExportDialog = ({ onClose, open, unityContent }) => {
               </Grid>
               <Grid item xs>
                 <Typography variant="body2">
-                  This operation may take around 1 hour. Please don't close your
-                  browser.
+                  This operation may take around{' '}
+                  {Math.ceil(fileInfo.length / 60)} hours. Please don't close
+                  your browser.
                 </Typography>
               </Grid>
             </Grid>
@@ -135,7 +136,10 @@ const ExportDialog = ({ onClose, open, unityContent }) => {
                 </Grid>
                 <Grid item xs></Grid>
                 <Grid item>
-                  <Typography variant="body2">2:40 / 5:50</Typography>
+                  <Typography variant="body2">
+                    0:00 / {Math.floor(fileInfo.length / 60)}:
+                    {fileInfo.length % 60}
+                  </Typography>
                 </Grid>
               </Grid>
             </Grid>

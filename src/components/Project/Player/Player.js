@@ -33,8 +33,8 @@ class Player extends React.Component {
       this.unityContent.send('Sheet', 'ReceiveFile', props.fileURL);
     });
 
-    this.unityContent.on('FileLoaded', () => {
-      this.setState({ fileLoaded: true });
+    this.unityContent.on('FileLoaded', (fileInfo) => {
+      this.setState({ fileInfo });
     });
 
     this.unityContent.on('Finished', () => {
@@ -43,7 +43,7 @@ class Player extends React.Component {
   }
   state = {
     unityLoaded: false,
-    fileLoaded: false,
+    fileInfo: false,
     playback: 'stopped',
     export: false,
   };
@@ -103,7 +103,7 @@ class Player extends React.Component {
               <CircularProgress />
             </div>
           )}
-          {this.state.fileLoaded && (
+          {this.state.fileInfo && (
             <div
               className={cx(
                 classes.overlay,
@@ -211,6 +211,7 @@ class Player extends React.Component {
           onClose={() => this.setState({ export: false })}
           unityContent={this.unityContent}
           open={this.state.export}
+          fileInfo={this.state.fileInfo}
         />
       </div>
     );
