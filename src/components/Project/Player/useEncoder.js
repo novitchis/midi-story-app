@@ -1,13 +1,31 @@
+import { useState, useEffect } from 'react';
 import useFFmpeg from './useFFmpeg';
 import { downloadBlob } from '../../../utils/downloadUtils';
 
 function useEncoder() {
   const { ffmpeg, error } = useFFmpeg(null);
+  const [encoder, setEncoder] = useState(null);
+  // const [frames, setFrames] = useState(0);
 
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     setFrames(framesCount);
+  //   }, 5000);
+  // }, []);
+  useEffect(() => {
+    if (!ffmpeg) return;
+    setEncoder(getEncoder(ffmpeg));
+  }, [ffmpeg]);
+
+  if (ffmpeg === null) return { encoder: null, error };
+
+  return { encoder };
+}
+
+const getEncoder = (ffmpeg) => {
+  let framesCount = 0;
   let currentFrame = null;
   let previousFrame = null;
-  let framesCount = 0;
-
   let outputVideo = null;
   let previousFrameVideo = null;
 
@@ -58,9 +76,11 @@ function useEncoder() {
     downloadBlob(outputVideo, 'video.webm', 'video/webm');
   };
 
-  if (ffmpeg === null) return { encoder: null, error };
+  const getFramesCount = () => {
+    return framesCount;
+  };
 
-  return { encoder: { addFrame, downloadVideo } };
-}
+  return { addFrame, downloadVideo, getFramesCount };
+};
 
 export default useEncoder;

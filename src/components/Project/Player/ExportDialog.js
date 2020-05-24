@@ -39,6 +39,18 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo }) => {
   const [isExporting, setIsExporting] = useState(false);
   const { encoder, error } = useEncoder();
 
+  const [fps, setFps] = useState(0);
+  const [tick, setTicks] = useState(0);
+
+  useEffect(() => {
+    if (!encoder) return;
+    const frames = encoder.getFramesCount();
+    setTimeout(() => {
+      setFps((encoder.getFramesCount() - frames) / 3);
+      setTicks((ticks) => ticks + 1);
+    }, 3000);
+  }, [encoder, tick]);
+
   useEffect(() => {
     if (!encoder) return;
 
@@ -55,6 +67,7 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo }) => {
 
   const handleExportClick = () => {
     if (!isExporting) {
+      //TODO: reset encoder
       setIsExporting(true);
     } else {
       setIsExporting(false);
@@ -110,9 +123,8 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo }) => {
               </Grid>
               <Grid item xs>
                 <Typography variant="body2">
-                  This operation may take around{' '}
-                  {Math.ceil(fileInfo.length / 60)} hours. Please don't close
-                  your browser.
+                  This operation may take some time. Please don't close your
+                  browser.
                 </Typography>
               </Grid>
             </Grid>
@@ -127,18 +139,20 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo }) => {
                 <Grid item xs={12}>
                   <LinearProgress
                     variant="determinate"
-                    value={42}
+                    value={
+                      (encoder.getFramesCount() / (fileInfo.length * 60)) * 100
+                    }
                     color="secondary"
                   />
                 </Grid>
                 <Grid item>
-                  <Typography variant="body2">1 fps</Typography>
+                  <Typography variant="body2">{fps.toFixed(1)} fps</Typography>
                 </Grid>
                 <Grid item xs></Grid>
                 <Grid item>
                   <Typography variant="body2">
-                    0:00 / {Math.floor(fileInfo.length / 60)}:
-                    {fileInfo.length % 60}
+                    {toMMSS(encoder.getFramesCount() / 60)} /{' '}
+                    {toMMSS(fileInfo.length)}
                   </Typography>
                 </Grid>
               </Grid>
@@ -158,6 +172,17 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo }) => {
       </DialogActions>
     </Dialog>
   );
+};
+
+const toMMSS = function (number) {
+  var sec_num = parseInt(number, 10); // don't forget the second param
+  var minutes = Math.floor(sec_num / 60);
+  var seconds = Math.floor(sec_num % 60);
+
+  if (seconds < 10) {
+    seconds = '0' + seconds;
+  }
+  return minutes + ':' + seconds;
 };
 
 export default ExportDialog;
