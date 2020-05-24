@@ -11,15 +11,18 @@ import {
   makeStyles,
   IconButton,
   LinearProgress,
+  Divider,
 } from '@material-ui/core';
 import useEncoder from './useEncoder';
 import CloseIcon from '@material-ui/icons/Close';
 import InfoIcon from '@material-ui/icons/Info';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import { humanFileSize } from '../../../utils/downloadUtils';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: 360,
-    padding: theme.spacing(2, 3),
+    overflow: 'hidden',
   },
   closeButton: {
     position: 'absolute',
@@ -34,32 +37,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ExportDialog = ({ onClose, open, unityContent, fileInfo }) => {
+const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
   const classes = useStyles();
   const [isExporting, setIsExporting] = useState(false);
+  const [exportFinished, setExportFinished] = useState(false);
   const { encoder, error } = useEncoder();
 
   const [fps, setFps] = useState(0);
-  const [tick, setTicks] = useState(0);
+  const [ticks, setTicks] = useState(0);
 
   useEffect(() => {
-    if (!encoder) return;
+    if (!encoder || !isExporting) return;
     const frames = encoder.getFramesCount();
     setTimeout(() => {
       setFps((encoder.getFramesCount() - frames) / 3);
-      setTicks((ticks) => ticks + 1);
+      setTicks((ticks) => ticks + 3);
     }, 3000);
-  }, [encoder, tick]);
+  }, [encoder, ticks, isExporting]);
 
   useEffect(() => {
     if (!encoder) return;
 
     if (isExporting) {
+      setTicks(0);
       unityContent.send('Main Camera', 'StartCapturing');
 
       // TODO: how to remove this event?
-      unityContent.on('ImageCaptured', (args) => {
-        encoder.addFrame(...args);
+      unityContent.on('ImageCaptured', ([fileName, FS]) => {
+        if (!encoder.addFrame(fileName, FS)) {
+          setIsExporting(false);
+          setExportFinished(true);
+        }
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -67,12 +75,12 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo }) => {
 
   const handleExportClick = () => {
     if (!isExporting) {
-      //TODO: reset encoder
+      encoder.start();
       setIsExporting(true);
     } else {
       setIsExporting(false);
+      setExportFinished(true);
       unityContent.send('Main Camera', 'StopCapturing');
-      encoder.downloadVideo();
     }
   };
 
@@ -83,7 +91,7 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo }) => {
       open={open}
       disableBackdropClick
     >
-      <DialogTitle id="export-dialog-title">Export Video</DialogTitle>
+      <DialogTitle id="export-dialog-title">Create Video</DialogTitle>
       <IconButton
         className={classes.closeButton}
         onClick={onClose}
@@ -117,23 +125,56 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo }) => {
             </Grid>
           </Grid>
           {!isExporting ? (
-            <Grid item container alignItems="center" spacing={1}>
-              <Grid item>
-                <InfoIcon />
-              </Grid>
-              <Grid item xs>
-                <Typography variant="body2">
-                  This operation may take some time. Please don't close your
-                  browser.
-                </Typography>
-              </Grid>
-            </Grid>
+            <>
+              {exportFinished ? (
+                <Grid item container alignItems="center" spacing={3}>
+                  <Grid item xs={12}>
+                    <Divider />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="body2">
+                      Your video was successfully created:
+                    </Typography>
+                  </Grid>
+                  <Grid item container>
+                    <Grid item xs>
+                      <Typography>{fileName}.webm</Typography>
+                    </Grid>
+
+                    <Grid item>
+                      <Typography variant="body2">
+                        {toMMSS(encoder.getOutputInfo().duration)} •{' '}
+                        {humanFileSize(encoder.getOutputInfo().size)}
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="caption" color="secondary">
+                        Created in {(ticks / 60).toFixed(1)} min,{' '}
+                        {fps.toFixed(1)} fps average.
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              ) : (
+                <Grid item container alignItems="center" spacing={1}>
+                  <Grid item>
+                    <InfoIcon />
+                  </Grid>
+                  <Grid item xs>
+                    <Typography variant="body2">
+                      This operation may take some time. Please don't close your
+                      browser.
+                    </Typography>
+                  </Grid>
+                </Grid>
+              )}
+            </>
           ) : (
             <Grid item>
               <Grid container spacing={1}>
                 <Grid item>
                   <Typography variant="body2" color="textSecondary">
-                    Exporting
+                    Progress
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
@@ -166,9 +207,26 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo }) => {
         </Grid>
       </DialogContent>
       <DialogActions style={{ justifyContent: 'center' }}>
-        <Button onClick={handleExportClick} variant="contained" color="primary">
-          {isExporting ? 'Cancel Export' : 'Export'}
-        </Button>
+        {exportFinished ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              encoder.downloadVideo(fileName);
+            }}
+          >
+            <GetAppIcon />
+            Save
+          </Button>
+        ) : (
+          <Button
+            onClick={handleExportClick}
+            variant="contained"
+            color="primary"
+          >
+            {isExporting ? 'Stop' : 'Start'}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

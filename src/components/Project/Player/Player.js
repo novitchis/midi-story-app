@@ -208,6 +208,7 @@ class Player extends React.Component {
           {name}
         </Typography>
         <ExportDialog
+          fileName={name}
           onClose={() => this.setState({ export: false })}
           unityContent={this.unityContent}
           open={this.state.export}

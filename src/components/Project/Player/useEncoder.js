@@ -5,13 +5,7 @@ import { downloadBlob } from '../../../utils/downloadUtils';
 function useEncoder() {
   const { ffmpeg, error } = useFFmpeg(null);
   const [encoder, setEncoder] = useState(null);
-  // const [frames, setFrames] = useState(0);
 
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     setFrames(framesCount);
-  //   }, 5000);
-  // }, []);
   useEffect(() => {
     if (!ffmpeg) return;
     setEncoder(getEncoder(ffmpeg));
@@ -24,28 +18,40 @@ function useEncoder() {
 
 const getEncoder = (ffmpeg) => {
   let framesCount = 0;
-  let currentFrame = null;
-  let previousFrame = null;
   let outputVideo = null;
   let previousFrameVideo = null;
 
-  const addFrame = (imageName, FS) => {
-    previousFrame = currentFrame;
-    currentFrame = imageName;
+  const start = () => {
+    framesCount = 0;
+    outputVideo = null;
+    previousFrameVideo = null;
+  };
 
-    if (previousFrame) {
-      // create a video from each frame
-      const previousFile = {
-        name: previousFrame.substring(previousFrame.lastIndexOf('/') + 1),
-        data: FS.readFile(previousFrame, { encoding: 'binary' }),
-      };
+  const addFrame = (imageName, FS) => {
+    if (imageName === null || (framesCount !== 0 && framesCount % 5 === 0)) {
+      const workingDirectory = FS.lookupPath('/working');
+      const memfs = [];
+
+      for (let fileKey in workingDirectory.node.contents) {
+        if (fileKey.endsWith('.png')) {
+          memfs.push({
+            name: fileKey,
+            data: FS.readFile(
+              FS.getPath(workingDirectory.node.contents[fileKey]),
+              { encoding: 'binary' }
+            ),
+          });
+          FS.unlink(FS.getPath(workingDirectory.node.contents[fileKey]));
+        }
+      }
+
       const result = ffmpeg({
-        MEMFS: [previousFile],
+        MEMFS: memfs,
         // prettier-ignore
-        arguments: ['-framerate', '60', '-i', previousFile.name, 'frame.webm']
+        arguments: ['-framerate', '60', "-start_number", (framesCount - memfs.length).toFixed(0), '-i', "img%5d.png", 'frame.webm']
       });
 
-      if (framesCount === 0) {
+      if (outputVideo === null) {
         outputVideo = result.MEMFS[0].data;
       } else {
         previousFrameVideo = result.MEMFS[0].data;
@@ -66,21 +72,28 @@ const getEncoder = (ffmpeg) => {
 
         outputVideo = concat.MEMFS[0].data;
       }
-
-      framesCount++;
-      console.log(framesCount);
     }
+
+    framesCount++;
+    return Boolean(imageName);
   };
 
-  const downloadVideo = () => {
-    downloadBlob(outputVideo, 'video.webm', 'video/webm');
+  const downloadVideo = (name) => {
+    downloadBlob(outputVideo, name, 'video/webm');
   };
 
   const getFramesCount = () => {
     return framesCount;
   };
 
-  return { addFrame, downloadVideo, getFramesCount };
+  const getOutputInfo = () => {
+    return {
+      duration: Math.floor(framesCount / 60),
+      size: outputVideo.length,
+    };
+  };
+
+  return { start, addFrame, downloadVideo, getOutputInfo, getFramesCount };
 };
 
 export default useEncoder;
