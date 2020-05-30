@@ -183,7 +183,7 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
                 </Grid>
                 <Grid item xs={12}>
                   <LinearProgress
-                    variant="buffer"
+                    variant="determinate"
                     value={encoderStatus.percentageDone}
                     color="secondary"
                   />
