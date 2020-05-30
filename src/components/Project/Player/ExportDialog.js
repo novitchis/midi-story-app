@@ -43,14 +43,11 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
   const [exportFinished, setExportFinished] = useState(false);
   const { encoder, error } = useEncoder();
 
-  const [fps, setFps] = useState(0);
   const [ticks, setTicks] = useState(0);
 
   useEffect(() => {
     if (!encoder || !isExporting) return;
-    const frames = encoder.getFramesCount();
     setTimeout(() => {
-      setFps((encoder.getFramesCount() - frames) / 3);
       setTicks((ticks) => ticks + 3);
     }, 3000);
   }, [encoder, ticks, isExporting]);
@@ -75,7 +72,7 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
 
   const handleExportClick = () => {
     if (!isExporting) {
-      encoder.start();
+      encoder.start(fileInfo);
       setIsExporting(true);
     } else {
       setIsExporting(false);
@@ -83,6 +80,8 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
       unityContent.send('Main Camera', 'StopCapturing');
     }
   };
+
+  const encoderStatus = encoder ? encoder.getStats() : {};
 
   return (
     <Dialog
@@ -149,8 +148,13 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
                     </Grid>
                     <Grid item>
                       <Typography variant="caption" color="secondary">
-                        Created in {(ticks / 60).toFixed(1)} min,{' '}
-                        {fps.toFixed(1)} fps average.
+                        Created in{' '}
+                        <FixedNumber>
+                          {encoderStatus.timeSpent / 60}
+                        </FixedNumber>{' '}
+                        min,{' '}
+                        <FixedNumber>{encoderStatus.fpsAverage}</FixedNumber>{' '}
+                        fps average.
                       </Typography>
                     </Grid>
                   </Grid>
@@ -179,22 +183,37 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
                 </Grid>
                 <Grid item xs={12}>
                   <LinearProgress
-                    variant="determinate"
-                    value={
-                      (encoder.getFramesCount() / (fileInfo.length * 60)) * 100
-                    }
+                    variant="buffer"
+                    value={encoderStatus.percentageDone}
                     color="secondary"
                   />
                 </Grid>
                 <Grid item>
-                  <Typography variant="body2">{fps.toFixed(1)} fps</Typography>
+                  {encoderStatus.fps !== -1 && (
+                    <Typography variant="body2">
+                      <FixedNumber>{encoderStatus.fps}</FixedNumber> fps
+                    </Typography>
+                  )}
                 </Grid>
                 <Grid item xs></Grid>
                 <Grid item>
                   <Typography variant="body2">
-                    {toMMSS(encoder.getFramesCount() / 60)} /{' '}
+                    {toMMSS(encoderStatus.framesCount / 60)} /{' '}
                     {toMMSS(fileInfo.length)}
                   </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  {encoderStatus.timeLeft !== -1 && (
+                    <Typography
+                      align="center"
+                      color="textSecondary"
+                      variant="body2"
+                    >
+                      about{' '}
+                      <FixedNumber>{encoderStatus.timeLeft / 60}</FixedNumber>{' '}
+                      min left
+                    </Typography>
+                  )}
                 </Grid>
               </Grid>
             </Grid>
@@ -230,6 +249,10 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
       </DialogActions>
     </Dialog>
   );
+};
+
+const FixedNumber = ({ children }) => {
+  return children.toFixed(1);
 };
 
 const toMMSS = function (number) {
