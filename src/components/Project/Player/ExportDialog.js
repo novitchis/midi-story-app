@@ -149,10 +149,7 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
                     <Grid item>
                       <Typography variant="caption" color="secondary">
                         Created in{' '}
-                        <FixedNumber>
-                          {encoderStatus.timeSpent / 60}
-                        </FixedNumber>{' '}
-                        min,{' '}
+                        <TotalTime>{encoderStatus.timeSpent}</TotalTime>,{' '}
                         <FixedNumber>{encoderStatus.fpsAverage}</FixedNumber>{' '}
                         fps average.
                       </Typography>
@@ -209,9 +206,7 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
                       color="textSecondary"
                       variant="body2"
                     >
-                      about{' '}
-                      <FixedNumber>{encoderStatus.timeLeft / 60}</FixedNumber>{' '}
-                      min left
+                      <TotalTime>{encoderStatus.timeLeft}</TotalTime> left
                     </Typography>
                   )}
                 </Grid>
@@ -253,6 +248,19 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
 
 const FixedNumber = ({ children }) => {
   return children.toFixed(1);
+};
+
+const TotalTime = ({ children }) => {
+  const hours = Math.floor(children / 60 / 60);
+  const minutes = Math.floor((children / 60) % 60);
+  let timeLeft = '';
+  if (hours > 0) timeLeft += `${hours} hour`;
+  if (hours > 1) timeLeft += 's';
+
+  if (minutes > 0) timeLeft += ` ${minutes} minute`;
+  if (minutes > 1) timeLeft += 's';
+
+  return timeLeft.trim();
 };
 
 const toMMSS = function (number) {
