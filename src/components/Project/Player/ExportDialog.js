@@ -13,6 +13,7 @@ import {
   LinearProgress,
   Divider,
   CircularProgress,
+  Paper,
 } from '@material-ui/core';
 import useEncoder from './useEncoder';
 import CloseIcon from '@material-ui/icons/Close';
@@ -170,7 +171,7 @@ const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
             </Grid>
           </Grid>
           <Grid item xs>
-            <div className={classes.playerOuter}>
+            <Paper className={classes.playerOuter}>
               {!unityLoaded && (
                 <div className={classes.center}>
                   <CircularProgress />
@@ -186,7 +187,7 @@ const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
                   {unityContent && <Unity unityContent={unityContent} />}
                 </div>
               </div>
-            </div>
+            </Paper>
           </Grid>
           {!isExporting ? (
             <>
