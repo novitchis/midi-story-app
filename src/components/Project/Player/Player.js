@@ -207,13 +207,15 @@ class Player extends React.Component {
         <Typography variant="h6" noWrap className={classes.caption}>
           {name}
         </Typography>
-        <ExportDialog
-          fileName={name}
-          onClose={() => this.setState({ export: false })}
-          unityContent={this.unityContent}
-          open={this.state.export}
-          fileInfo={this.state.fileInfo}
-        />
+        {this.state.export && (
+          <ExportDialog
+            fileName={name}
+            onClose={() => this.setState({ export: false })}
+            unityContent={this.unityContent}
+            open={this.state.export}
+            fileInfo={this.state.fileInfo}
+          />
+        )}
       </div>
     );
   }
