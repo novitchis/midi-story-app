@@ -12,16 +12,19 @@ import {
   IconButton,
   LinearProgress,
   Divider,
+  CircularProgress,
 } from '@material-ui/core';
 import useEncoder from './useEncoder';
 import CloseIcon from '@material-ui/icons/Close';
 import InfoIcon from '@material-ui/icons/Info';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { humanFileSize } from '../../../utils/downloadUtils';
+import Unity, { UnityContent } from 'react-unity-webgl';
+import cx from 'class-names';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: 360,
+    width: 460,
     overflow: 'hidden',
   },
   closeButton: {
@@ -35,15 +38,58 @@ const useStyles = makeStyles((theme) => ({
   alignRight: {
     textAlign: 'right',
   },
+  playerInner720: {
+    height: 720,
+    width: 1280,
+    transform: 'scale(0.36)',
+    transformOrigin: 'left top',
+    pointerEvents: 'none',
+  },
+  playerScaler: {},
+  playerOuter: {
+    height: 720 * 0.36,
+    width: 1280 * 0.36,
+  },
+  hidden: {
+    visibility: 'hidden',
+  },
+  center: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 }));
 
-const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
+const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
   const classes = useStyles();
+  const [unityContent, setUnityContent] = useState(null);
+  const [unityLoaded, setUnityLoaded] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportFinished, setExportFinished] = useState(false);
   const { encoder, error } = useEncoder();
 
   const [ticks, setTicks] = useState(0);
+
+  useEffect(() => {
+    let unityContent = new UnityContent(
+      'Player/Build.json',
+      'Player/UnityLoader.js'
+    );
+    setUnityContent(unityContent);
+
+    unityContent.on('loaded', () => {
+      unityContent.send('Sheet', 'ReceiveFile', fileURL);
+    });
+
+    unityContent.on('FileLoaded', (fileInfo) => {
+      setUnityLoaded(true);
+    });
+  }, [fileURL]);
 
   useEffect(() => {
     if (!encoder || !isExporting) return;
@@ -123,6 +169,25 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
               <Typography>WebM</Typography>
             </Grid>
           </Grid>
+          <Grid item xs>
+            <div className={classes.playerOuter}>
+              {!unityLoaded && (
+                <div className={classes.center}>
+                  <CircularProgress />
+                </div>
+              )}
+              <div className={classes.playerScaler}>
+                <div
+                  className={cx(
+                    classes.playerInner720,
+                    !unityLoaded && classes.hidden
+                  )}
+                >
+                  {unityContent && <Unity unityContent={unityContent} />}
+                </div>
+              </div>
+            </div>
+          </Grid>
           {!isExporting ? (
             <>
               {exportFinished ? (
@@ -146,7 +211,7 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
                         {humanFileSize(encoder.getOutputInfo().size)}
                       </Typography>
                     </Grid>
-                    <Grid item>
+                    <Grid item xs={12}>
                       <Typography variant="caption" color="secondary">
                         Created in{' '}
                         <TotalTime>{encoderStatus.timeSpent}</TotalTime>,{' '}
@@ -237,6 +302,7 @@ const ExportDialog = ({ onClose, open, unityContent, fileInfo, fileName }) => {
             onClick={handleExportClick}
             variant="contained"
             color="primary"
+            disabled={!unityLoaded}
           >
             {isExporting ? 'Stop' : 'Start'}
           </Button>
@@ -252,7 +318,7 @@ const FixedNumber = ({ children }) => {
 
 const TotalTime = ({ children }) => {
   const hours = Math.floor(children / 60 / 60);
-  const minutes = Math.floor((children / 60) % 60);
+  const minutes = Math.ceil((children / 60) % 60);
   let timeLeft = '';
   if (hours > 0) timeLeft += `${hours} hour`;
   if (hours > 1) timeLeft += 's';

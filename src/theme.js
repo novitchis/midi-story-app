@@ -60,7 +60,7 @@ const theme = {
     },
     MuiDialogActions: {
       spacing: {
-        padding: '8px 24px 16px 8px',
+        padding: '16px 24px 16px 24px',
       },
     },
   },

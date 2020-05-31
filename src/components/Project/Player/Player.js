@@ -214,6 +214,7 @@ class Player extends React.Component {
             unityContent={this.unityContent}
             open={this.state.export}
             fileInfo={this.state.fileInfo}
+            fileURL={this.props.fileURL}
           />
         )}
       </div>
