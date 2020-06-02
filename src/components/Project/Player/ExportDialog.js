@@ -19,7 +19,7 @@ import useEncoder from './useEncoder';
 import CloseIcon from '@material-ui/icons/Close';
 import InfoIcon from '@material-ui/icons/Info';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import { humanFileSize } from '../../../utils/downloadUtils';
+import { downloadBlob, humanFileSize } from '../../../utils/downloadUtils';
 import Unity, { UnityContent } from 'react-unity-webgl';
 import cx from 'class-names';
 
@@ -71,7 +71,8 @@ const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
   const [unityContent, setUnityContent] = useState(null);
   const [unityLoaded, setUnityLoaded] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-  const [exportFinished, setExportFinished] = useState(false);
+  // const [exportFinished, setExportFinished] = useState(false);
+  const [output, setOutput] = useState(null);
   const { encoder, error } = useEncoder();
 
   const [ticks, setTicks] = useState(0);
@@ -109,8 +110,7 @@ const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
       // TODO: how to remove this event?
       unityContent.on('ImageCaptured', ([fileName, FS]) => {
         if (!encoder.addFrame(fileName, FS)) {
-          setIsExporting(false);
-          setExportFinished(true);
+          finishExport();
         }
       });
     }
@@ -121,11 +121,18 @@ const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
     if (!isExporting) {
       encoder.start(fileInfo);
       setIsExporting(true);
+      setOutput(null);
     } else {
-      setIsExporting(false);
-      setExportFinished(true);
+      finishExport();
       unityContent.send('Main Camera', 'StopCapturing');
     }
+  };
+
+  const finishExport = () => {
+    encoder.endEncoding().then((result) => {
+      setOutput(result);
+      setIsExporting(false);
+    });
   };
 
   const encoderStatus = encoder ? encoder.getStats() : {};
@@ -191,7 +198,7 @@ const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
           </Grid>
           {!isExporting ? (
             <>
-              {exportFinished ? (
+              {output ? (
                 <Grid item container alignItems="center" spacing={3}>
                   <Grid item xs={12}>
                     <Divider />
@@ -208,8 +215,8 @@ const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
 
                     <Grid item>
                       <Typography variant="body2">
-                        {toMMSS(encoder.getOutputInfo().duration)} •{' '}
-                        {humanFileSize(encoder.getOutputInfo().size)}
+                        {toMMSS(output.duration)} •{' '}
+                        {humanFileSize(output.data.length)}
                       </Typography>
                     </Grid>
                     <Grid item xs={12}>
@@ -287,12 +294,12 @@ const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
         </Grid>
       </DialogContent>
       <DialogActions style={{ justifyContent: 'center' }}>
-        {exportFinished ? (
+        {output ? (
           <Button
             variant="contained"
             color="primary"
             onClick={() => {
-              encoder.downloadVideo(fileName);
+              downloadBlob(output.data, fileName, 'video/webm');
             }}
           >
             <GetAppIcon />
