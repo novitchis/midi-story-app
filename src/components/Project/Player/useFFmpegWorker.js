@@ -23,15 +23,17 @@ function useFFmpegWorker() {
                 //messageId++;
               });
             },
+            resetWork: () => {
+              callbacks[messageId].reject();
+            },
           });
           break;
         case 'stdout':
-          console.log(msg.data);
+          //console.log(msg.data);
           break;
         case 'stderr':
           if (callbacks[messageId]) {
-            console.log(msg.data);
-
+            //console.log(msg.data);
             // callbacks[messageId].reject(new Error(msg.data));
           } else {
             setFFmpegAsync({
@@ -45,7 +47,7 @@ function useFFmpegWorker() {
           if (callbacks[messageId]) {
             callbacks[messageId].resolve(msg.data);
           }
-          console.log(msg.data);
+          //console.log(msg.data);
           // resolve(msg.data);
           break;
         default:

@@ -123,8 +123,9 @@ const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
       setIsExporting(true);
       setOutput(null);
     } else {
-      finishExport();
       unityContent.send('Main Camera', 'StopCapturing');
+      encoder.cancel();
+      setIsExporting(false);
     }
   };
 
@@ -253,8 +254,9 @@ const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
                 </Grid>
                 <Grid item xs={12}>
                   <LinearProgress
-                    variant="determinate"
+                    variant="buffer"
                     value={encoderStatus.percentageDone}
+                    valueBuffer={encoderStatus.percentageBuffer}
                     color="secondary"
                   />
                 </Grid>
@@ -268,7 +270,7 @@ const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
                 <Grid item xs></Grid>
                 <Grid item>
                   <Typography variant="body2">
-                    {toMMSS(encoderStatus.framesCount / 60)} /{' '}
+                    {toMMSS(encoderStatus.framesEncoded / 60)} /{' '}
                     {toMMSS(fileInfo.length)}
                   </Typography>
                 </Grid>
