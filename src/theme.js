@@ -1,3 +1,5 @@
+import { grey } from '@material-ui/core/colors';
+
 const theme = {
   palette: {
     type: 'dark',
@@ -61,6 +63,25 @@ const theme = {
     MuiDialogActions: {
       spacing: {
         padding: '16px 24px 16px 24px',
+      },
+    },
+    MuiLinearProgress: {
+      bar1Buffer: {},
+      bar2Buffer: {
+        background: grey[300],
+        opacity: 0.3,
+      },
+      dashedColorPrimary: {
+        background: grey[500],
+        opacity: 0.3,
+        backgroundImage: 'none',
+        animation: 'none',
+      },
+      dashedColorSecondary: {
+        background: grey[500],
+        opacity: 0.3,
+        backgroundImage: 'none',
+        animation: 'none',
       },
     },
   },
