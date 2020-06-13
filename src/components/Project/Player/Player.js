@@ -174,7 +174,7 @@ class Player extends React.Component {
                       <Grid item xs />
                       <Grid item>
                         <Tooltip
-                          title="Export Video"
+                          title="Create Video"
                           className={classes.settings}
                         >
                           <IconButton

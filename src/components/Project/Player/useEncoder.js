@@ -5,39 +5,43 @@ import useFFmpegWorker from './useFFmpegWorker';
 const CHUNK_SIZE = 60;
 
 function useEncoder() {
-  const { ffmpeg, resetWork, error } = useFFmpegWorker(null);
+  const worker1 = useFFmpegWorker(null);
+  const worker2 = useFFmpegWorker(null);
+
   const [encoder, setEncoder] = useState(null);
 
   useEffect(() => {
-    if (!ffmpeg) return;
-    setEncoder(getEncoder(ffmpeg, resetWork));
-  }, [ffmpeg, resetWork]);
+    if (!worker1.ffmpeg || !worker2.ffmpeg || encoder !== null) return;
+    setEncoder(getEncoder([worker1, worker2]));
+  }, [worker1, worker2, encoder]);
 
-  if (ffmpeg === null) return { encoder: null, error };
+  if (worker1.ffmpeg === null || worker2.ffmpeg === null)
+    return { encoder: null, error: worker1.error || worker2.error };
 
   return { encoder };
 }
 
-const getEncoder = (ffmpeg, resetWork) => {
+const getEncoder = (workers) => {
+  const workersPool = [...workers];
+
   let fileInfo = null;
   let framesCount = 0;
   let startTime = null;
   let fps = -1;
-  let isEncoding = false;
 
   let chunks = null;
+  let encodedChunksCount = 0;
+
   let outputChunks = null;
-  let encodePromise = null;
 
   const start = (fInfo) => {
     fileInfo = fInfo;
+    fps = -1;
     framesCount = 0;
+    encodedChunksCount = 0;
     startTime = Date.now();
     chunks = [];
     outputChunks = [];
-    isEncoding = true;
-
-    startEncoding();
   };
 
   const addFrame = (imageName, FS) => {
@@ -58,7 +62,7 @@ const getEncoder = (ffmpeg, resetWork) => {
         }
       }
 
-      chunks.push({
+      addEncodingWork({
         MEMFS: memfs,
         // prettier-ignore
         arguments: [
@@ -72,76 +76,84 @@ const getEncoder = (ffmpeg, resetWork) => {
     return Boolean(imageName);
   };
 
-  const startEncoding = () => {
-    encodePromise = new Promise((resolve, reject) => {
-      const encodeNextChunk = () => {
-        if (chunks.length > 0) {
-          const encodeBatchStart = Date.now();
-          const currentChunk = chunks.shift();
+  const addEncodingWork = (chunk) => {
+    chunks.push(chunk);
+    encodeNextChunk();
+  };
 
-          ffmpeg(currentChunk).then((result) => {
-            outputChunks.push(result.MEMFS[0].data);
+  const encodeNextChunk = () => {
+    if (chunks.length === 0 || workersPool.length === 0) return;
 
-            fps =
-              currentChunk.MEMFS.length /
-              ((Date.now() - encodeBatchStart) / 1000);
+    const worker = workersPool.pop();
+    const chunk = chunks.shift();
+    const chunkIndex = encodedChunksCount++;
 
-            encodeNextChunk();
-          });
-        } else {
-          if (isEncoding) setTimeout(encodeNextChunk, 5000);
-          else resolve();
-        }
-      };
+    const encodeBatchStart = Date.now();
 
-      encodeNextChunk();
-    });
+    worker
+      .ffmpeg(chunk)
+      .then((result) => {
+        outputChunks[chunkIndex] = result.MEMFS[0].data;
+        fps =
+          (chunk.MEMFS.length / ((Date.now() - encodeBatchStart) / 1000)) * 2;
+
+        workersPool.push(worker);
+        encodeNextChunk();
+      })
+      .catch(() => {
+        workersPool.push(worker);
+      });
   };
 
   const endEncoding = () => {
     return new Promise((resolve, reject) => {
-      // concatenate each frame into output video
-      if (!isEncoding) {
-        reject(new Error('Encoding is not started.'));
-        return;
-      }
+      const awaitWorkersFinish = () => {
+        setTimeout(() => {
+          if (chunks.length === 0 && workersPool.length === workers.length) {
+            concatChunks(workersPool.pop())
+              .then((result) => {
+                outputChunks = [];
+                resolve({
+                  duration: Math.floor(framesCount / 60),
+                  data: result.MEMFS[0].data,
+                });
+              })
+              .catch(reject);
+          } else {
+            awaitWorkersFinish();
+          }
+        }, 5000);
+      };
+      awaitWorkersFinish();
+    });
+  };
 
-      isEncoding = false;
+  const concatChunks = (worker) => {
+    // concatenate all chunks into final video
+    const memfs = outputChunks.map((outputChunk, index) => ({
+      name: `chunk${index}.webm`,
+      data: outputChunk,
+    }));
 
-      encodePromise.then(() => {
-        // concatenate all chunks into final video
-        const memfs = outputChunks.map((outputChunk, index) => ({
-          name: `chunk${index}.webm`,
-          data: outputChunk,
-        }));
+    const list = memfs.reduce(
+      (acc, currentValue) => acc + `\nfile '${currentValue.name}'`,
+      ''
+    );
+    memfs.push({ name: 'list.txt', data: new TextEncoder().encode(list) });
 
-        const list = memfs.reduce(
-          (acc, currentValue) => acc + `\nfile '${currentValue.name}'`,
-          ''
-        );
-        memfs.push({ name: 'list.txt', data: new TextEncoder().encode(list) });
-
-        ffmpeg({
-          MEMFS: memfs,
-          // prettier-ignore
-          arguments: ['-f', 'concat', '-i', 'list.txt', '-c', 'copy',  'output.webm']
-        })
-          .then((result) => {
-            outputChunks = [];
-            resolve({
-              duration: Math.floor(framesCount / 60),
-              data: result.MEMFS[0].data,
-            });
-          })
-          .catch(reject);
-      });
+    return worker.ffmpeg({
+      MEMFS: memfs,
+      // prettier-ignore
+      arguments: ['-f', 'concat', '-i', 'list.txt', '-c', 'copy',  'output.webm']
     });
   };
 
   const cancel = () => {
-    isEncoding = false;
     chunks = [];
-    resetWork();
+    const busyWorkers = workers.filter(
+      (worker) => !workersPool.includes(worker)
+    );
+    busyWorkers.forEach((worker) => worker.resetWork());
   };
 
   const getStats = () => {
