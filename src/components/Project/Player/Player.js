@@ -15,7 +15,7 @@ import PlayIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import ReplayIcon from '@material-ui/icons/Replay';
 import DownloadIcon from '@material-ui/icons/YouTube';
-// import SettingsIcon from '@material-ui/icons/Settings';
+
 import cx from 'class-names';
 import ExportDialog from './ExportDialog';
 
