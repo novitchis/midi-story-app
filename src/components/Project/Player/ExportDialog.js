@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
   playerScaler: {},
   playerOuter: {
+    position: 'relative',
     height: 720 * 0.36,
     width: 1280 * 0.36,
   },
