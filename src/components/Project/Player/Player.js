@@ -24,7 +24,7 @@ class Player extends React.Component {
     super(props);
 
     this.unityContent = new UnityContent(
-      'Player/Build.json',
+      'Player/build.json',
       'Player/UnityLoader.js'
     );
 

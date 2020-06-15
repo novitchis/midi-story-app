@@ -80,7 +80,7 @@ const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
 
   useEffect(() => {
     let unityContent = new UnityContent(
-      'Player/Build.json',
+      'Player/build.json',
       'Player/UnityLoader.js'
     );
     setUnityContent(unityContent);
