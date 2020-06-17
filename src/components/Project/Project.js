@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
   },
   contentRoot: {
-    paddingTop: 180,
+    paddingTop: 100,
     padding: theme.spacing(3),
   },
   centerContent: {
