@@ -31,6 +31,7 @@ class Player extends React.Component {
     this.unityContent.on('loaded', () => {
       this.setState({ unityLoaded: true });
       this.unityContent.send('Sheet', 'ReceiveFile', props.fileURL);
+      props.onUnityLoaded(this.unityContent);
     });
 
     this.unityContent.on('FileLoaded', (fileInfo) => {

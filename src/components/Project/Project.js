@@ -5,6 +5,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Player from './Player';
 import firebase from 'firebase';
 import DocumentTitle from 'react-document-title';
+import Style from './Style';
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -12,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
   contentRoot: {
     paddingTop: 100,
-    padding: theme.spacing(3),
+    padding: theme.spacing(2),
   },
   centerContent: {
     textAlign: 'center',
@@ -29,6 +30,7 @@ const Project = ({ history }) => {
   const [error, setError] = useState('');
   const [file, setFile] = useState();
   const classes = useStyles();
+  const [unityContent, setUnityContent] = useState(null);
 
   useEffect(() => {
     if (!file) history.push('/new');
@@ -37,7 +39,7 @@ const Project = ({ history }) => {
 
   const handleFileChange = (e) => {
     if (e.target.files.length === 1) {
-      if (!e.target.files[0].name.endsWith('.mid')) {
+      if (!e.target.files[0].name.toLowerCase().endsWith('.mid')) {
         setError('Invalid file type. Please select a .mid file.');
       } else {
         setError('');
@@ -73,13 +75,37 @@ const Project = ({ history }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleStyleChange = (style) => {
+    // TODO: make sure we don't get here until the unity is loaded
+    //if (!unityContent) throw new Error('unityContent not loaded.');
+    if (!unityContent) return;
+
+    unityContent.send(
+      'Sheet',
+      'LoadStyle',
+      JSON.stringify({ trackColors: [style.color] })
+    );
+  };
+
   return (
     <div className={classes.contentRoot}>
       <DocumentTitle
         title={(file ? 'Your Story' : 'New Story') + ' – Midistory'}
       />
       {file ? (
-        <Player fileURL={file.url} name={file.name} onClose={clearFile} />
+        <Grid container spacing={2}>
+          <Grid item xs>
+            <Player
+              fileURL={file.url}
+              name={file.name}
+              onClose={clearFile}
+              onUnityLoaded={setUnityContent}
+            />
+          </Grid>
+          <Grid item>
+            <Style onChange={handleStyleChange} />
+          </Grid>
+        </Grid>
       ) : (
         <Grid
           container
