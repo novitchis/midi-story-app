@@ -12,9 +12,15 @@ import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: 300,
-    height: 400,
+    width: 240,
+    position: 'absolute',
+    top: 64,
+    bottom: 0,
+    right: 0,
     padding: theme.spacing(3),
+    border: `1px solid ${theme.palette.divider}`,
+    borderRight: 'none',
+    borderBottom: 'none',
   },
   colorRect: {
     display: 'inline-block',

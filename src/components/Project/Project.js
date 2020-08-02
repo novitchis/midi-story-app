@@ -93,19 +93,19 @@ const Project = ({ history }) => {
         title={(file ? 'Your Story' : 'New Story') + ' – Midistory'}
       />
       {file ? (
-        <Grid container spacing={2}>
-          <Grid item xs>
-            <Player
-              fileURL={file.url}
-              name={file.name}
-              onClose={clearFile}
-              onUnityLoaded={setUnityContent}
-            />
+        <div>
+          <Grid container>
+            <Grid item xs style={{ marginRight: 272 }}>
+              <Player
+                fileURL={file.url}
+                name={file.name}
+                onClose={clearFile}
+                onUnityLoaded={setUnityContent}
+              />
+            </Grid>
           </Grid>
-          <Grid item>
-            <Style onChange={handleStyleChange} />
-          </Grid>
-        </Grid>
+          <Style onChange={handleStyleChange} />
+        </div>
       ) : (
         <Grid
           container
