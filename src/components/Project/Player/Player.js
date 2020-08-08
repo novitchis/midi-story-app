@@ -100,7 +100,6 @@ class Player extends React.Component {
 
     //TODO: not run this on each render?
     if (style && this.state.unityLoaded) {
-      console.log('Styles Loaded');
       this.unityContent.send(
         'Sheet',
         'LoadStyle',
