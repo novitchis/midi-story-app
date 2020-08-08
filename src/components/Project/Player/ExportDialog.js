@@ -67,7 +67,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
+const ExportDialog = ({
+  onClose,
+  open,
+  fileInfo,
+  fileName,
+  fileURL,
+  style,
+}) => {
   const classes = useStyles();
   const [unityContent, setUnityContent] = useState(null);
   const [unityLoaded, setUnityLoaded] = useState(false);
@@ -91,8 +98,16 @@ const ExportDialog = ({ onClose, open, fileInfo, fileName, fileURL }) => {
 
     unityContent.on('FileLoaded', (fileInfo) => {
       setUnityLoaded(true);
+
+      if (style) {
+        unityContent.send(
+          'Sheet',
+          'LoadStyle',
+          JSON.stringify({ trackColors: [style.color] })
+        );
+      }
     });
-  }, [fileURL]);
+  }, [fileURL, style]);
 
   useEffect(() => {
     if (!encoder || !isExporting) return;

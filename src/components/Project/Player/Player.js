@@ -31,7 +31,6 @@ class Player extends React.Component {
     this.unityContent.on('loaded', () => {
       this.setState({ unityLoaded: true });
       this.unityContent.send('Sheet', 'ReceiveFile', props.fileURL);
-      props.onUnityLoaded(this.unityContent);
     });
 
     this.unityContent.on('FileLoaded', (fileInfo) => {
@@ -51,6 +50,16 @@ class Player extends React.Component {
 
   componentWillUnmount = () => {
     this.unityContent.remove();
+  };
+
+  loadStyles = () => {
+    if (this.props.style) {
+      this.unityContent.send(
+        'Sheet',
+        'LoadStyle',
+        JSON.stringify({ trackColors: [this.props.style.color] })
+      );
+    }
   };
 
   isPlaying = () => {
@@ -87,7 +96,18 @@ class Player extends React.Component {
   };
 
   render() {
-    const { classes, name, onClose } = this.props;
+    const { classes, name, onClose, style } = this.props;
+
+    //TODO: not run this on each render?
+    if (style && this.state.unityLoaded) {
+      console.log('Styles Loaded');
+      this.unityContent.send(
+        'Sheet',
+        'LoadStyle',
+        JSON.stringify({ trackColors: [this.props.style.color] })
+      );
+    }
+
     return (
       <div className={classes.root}>
         <Paper elevation={1} className={classes.paper}>
@@ -216,6 +236,7 @@ class Player extends React.Component {
             open={this.state.export}
             fileInfo={this.state.fileInfo}
             fileURL={this.props.fileURL}
+            style={this.props.style}
           />
         )}
       </div>

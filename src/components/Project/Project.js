@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles, Typography, Fab, Grid } from '@material-ui/core';
+import { makeStyles, Typography, Fab, Grid, Box } from '@material-ui/core';
 import AlbumIcon from '@material-ui/icons/Album';
 import AddIcon from '@material-ui/icons/Add';
 import Player from './Player';
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
   },
   contentRoot: {
-    paddingTop: 100,
+    paddingTop: 75,
     padding: theme.spacing(2),
   },
   centerContent: {
@@ -30,7 +30,7 @@ const Project = ({ history }) => {
   const [error, setError] = useState('');
   const [file, setFile] = useState();
   const classes = useStyles();
-  const [unityContent, setUnityContent] = useState(null);
+  const [style, setStyle] = useState(null);
 
   useEffect(() => {
     if (!file) history.push('/new');
@@ -75,18 +75,6 @@ const Project = ({ history }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleStyleChange = (style) => {
-    // TODO: make sure we don't get here until the unity is loaded
-    //if (!unityContent) throw new Error('unityContent not loaded.');
-    if (!unityContent) return;
-
-    unityContent.send(
-      'Sheet',
-      'LoadStyle',
-      JSON.stringify({ trackColors: [style.color] })
-    );
-  };
-
   return (
     <div className={classes.contentRoot}>
       <DocumentTitle
@@ -94,17 +82,21 @@ const Project = ({ history }) => {
       />
       {file ? (
         <div>
-          <Grid container>
-            <Grid item xs style={{ marginRight: 272 }}>
-              <Player
-                fileURL={file.url}
-                name={file.name}
-                onClose={clearFile}
-                onUnityLoaded={setUnityContent}
-              />
+          <Grid container spacing={3}>
+            <Grid item xs>
+              <Box mt={3}>
+                <Player
+                  fileURL={file.url}
+                  name={file.name}
+                  onClose={clearFile}
+                  style={style}
+                />
+              </Box>
+            </Grid>
+            <Grid item>
+              <Style onChange={setStyle} />
             </Grid>
           </Grid>
-          <Style onChange={handleStyleChange} />
         </div>
       ) : (
         <Grid

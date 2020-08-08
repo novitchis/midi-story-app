@@ -52,7 +52,7 @@ const AppBarComponent = () => {
   };
 
   return (
-    <AppBar elevation={1} color="inherit">
+    <AppBar elevation={2} color="inherit">
       <Toolbar>
         <Link to="/">
           <Typography variant="h4" color="primary">

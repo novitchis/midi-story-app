@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Paper,
   Typography,
   Grid,
   ButtonBase,
   Popover,
   makeStyles,
+  Divider,
 } from '@material-ui/core';
 import { TwitterPicker } from 'react-color';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
@@ -13,20 +13,16 @@ import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: 240,
-    position: 'absolute',
-    top: 64,
-    bottom: 0,
-    right: 0,
-    padding: theme.spacing(3),
-    border: `1px solid ${theme.palette.divider}`,
-    borderRight: 'none',
-    borderBottom: 'none',
   },
   colorRect: {
     display: 'inline-block',
     borderRadius: 2,
     height: 20,
     width: 40,
+  },
+  divider: {
+    marginTop: 160,
+    width: '100%',
   },
 }));
 
@@ -42,7 +38,7 @@ const Style = ({ onChange }) => {
   }, [style, onChange]);
 
   return (
-    <Paper className={classes.root} square>
+    <div className={classes.root}>
       <Grid container spacing={2} alignItems="center" direction="row">
         <Grid item>
           <Typography>All Tracks</Typography>
@@ -81,8 +77,9 @@ const Style = ({ onChange }) => {
             )}
           </PopupState>
         </Grid>
+        <Divider className={classes.divider} />
       </Grid>
-    </Paper>
+    </div>
   );
 };
 
