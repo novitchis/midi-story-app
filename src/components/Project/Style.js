@@ -5,7 +5,6 @@ import {
   ButtonBase,
   Popover,
   makeStyles,
-  Divider,
 } from '@material-ui/core';
 import { TwitterPicker } from 'react-color';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
@@ -67,6 +66,29 @@ const Style = ({ onChange }) => {
                   }}
                 >
                   <TwitterPicker
+                    colors={[
+                      '#ef9a9a',
+                      '#f48fb1',
+                      '#ce93d8',
+                      '#b39ddb',
+                      '#9fa8da',
+                      '#00bef9',
+                      '#90caf9',
+                      '#81d4fa',
+                      '#80deea',
+                      '#80cbc4',
+                      '#a5d6a7',
+                      '#c5e1a5',
+                      '#e6ee9c',
+                      '#fff59d',
+                      '#ffe082',
+                      '#ffcc80',
+                      '#ffab91',
+                      '#bcaaa4',
+                      '#ffffff',
+                      '#eeeeee',
+                      '#b0bec5',
+                    ]}
                     onChange={(color) => {
                       setStyle({ ...style, color: color.hex });
                       popupState.close();
@@ -77,7 +99,7 @@ const Style = ({ onChange }) => {
             )}
           </PopupState>
         </Grid>
-        <Divider className={classes.divider} />
+        {/* <Divider className={classes.divider} /> */}
       </Grid>
     </div>
   );
