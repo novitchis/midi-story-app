@@ -31,6 +31,7 @@ class Player extends React.Component {
     this.unityContent.on('loaded', () => {
       this.setState({ unityLoaded: true });
       this.unityContent.send('Sheet', 'ReceiveFile', props.fileURL);
+      this.loadStyles();
     });
 
     this.unityContent.on('FileLoaded', (fileInfo) => {
@@ -52,14 +53,21 @@ class Player extends React.Component {
     this.unityContent.remove();
   };
 
+  componentDidUpdate = (prevProps, prevState) => {
+    if (
+      this.state.unityLoaded &&
+      this.props.style &&
+      prevProps.style !== this.props.style
+    )
+      this.loadStyles();
+  };
+
   loadStyles = () => {
-    if (this.props.style) {
-      this.unityContent.send(
-        'Sheet',
-        'LoadStyle',
-        JSON.stringify({ trackColors: [this.props.style.color] })
-      );
-    }
+    this.unityContent.send(
+      'Sheet',
+      'LoadStyle',
+      JSON.stringify({ trackColors: [this.props.style.color] })
+    );
   };
 
   isPlaying = () => {
@@ -96,16 +104,7 @@ class Player extends React.Component {
   };
 
   render() {
-    const { classes, name, onClose, style } = this.props;
-
-    //TODO: not run this on each render?
-    if (style && this.state.unityLoaded) {
-      this.unityContent.send(
-        'Sheet',
-        'LoadStyle',
-        JSON.stringify({ trackColors: [this.props.style.color] })
-      );
-    }
+    const { classes, name, onClose } = this.props;
 
     return (
       <div className={classes.root}>
