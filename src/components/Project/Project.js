@@ -31,6 +31,7 @@ const Project = ({ history }) => {
   const [file, setFile] = useState();
   const classes = useStyles();
   const [style, setStyle] = useState(null);
+  const [fileInfo, setFileInfo] = useState(null);
 
   useEffect(() => {
     if (!file) history.push('/new');
@@ -89,12 +90,13 @@ const Project = ({ history }) => {
                   fileURL={file.url}
                   name={file.name}
                   onClose={clearFile}
+                  onFileLoaded={setFileInfo}
                   style={style}
                 />
               </Box>
             </Grid>
             <Grid item>
-              <Style onChange={setStyle} />
+              <Style onChange={setStyle} fileInfo={fileInfo} />
             </Grid>
           </Grid>
         </div>

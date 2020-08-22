@@ -36,6 +36,7 @@ class Player extends React.Component {
 
     this.unityContent.on('FileLoaded', (fileInfo) => {
       this.setState({ fileInfo });
+      props.onFileLoaded(fileInfo);
     });
 
     this.unityContent.on('Finished', () => {
@@ -66,7 +67,7 @@ class Player extends React.Component {
     this.unityContent.send(
       'Sheet',
       'LoadStyle',
-      JSON.stringify({ trackColors: [this.props.style.color] })
+      JSON.stringify(this.props.style)
     );
   };
 
